@@ -11,13 +11,13 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -28,9 +28,11 @@ import com.example.newcalendarlibrary.widgets.HomeTopAppBar
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.daysOfWeek
+import java.time.LocalDate
 import java.time.YearMonth
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Preview
 @Composable
 fun HomeScreen(
     navController: NavController = rememberNavController()
@@ -39,6 +41,7 @@ fun HomeScreen(
     val startMonth = remember { currentMonth.minusMonths(100) } // Adjust as needed
     val endMonth = remember { currentMonth.plusMonths(100) } // Adjust as needed
     val daysOfWeek = remember { daysOfWeek() }
+    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
 
     val state = rememberCalendarState(
         startMonth = startMonth,
@@ -56,7 +59,7 @@ fun HomeScreen(
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "Todo List",
-                            modifier = Modifier.padding(4.dp)
+                            modifier = Modifier.padding(10.dp)
                         )
                         Text(
                             text = "Todos", modifier = Modifier
@@ -82,7 +85,12 @@ fun HomeScreen(
         DaysOfWeekTitle(daysOfWeek = daysOfWeek) // Use the title here
         HorizontalCalendar(
             state = state,
-            dayContent = { Day(it) } ,
+            dayContent = { day ->
+                Day(day, isSelected = selectedDate == day.date) { day ->
+                    selectedDate = if (selectedDate == day.date) null else day.date
+                }
+            } ,
+
 
             // Draw the day content gradient.
             monthBody = { _, content ->
@@ -94,7 +102,12 @@ fun HomeScreen(
                                 Color(0xFFB2B8F2)
                             )
                         )
+
                     )
+
+
+
+
                 ) {
                     content() // Render the provided content!
                 }
@@ -102,17 +115,19 @@ fun HomeScreen(
             // Add the corners/borders and month width.
             monthContainer = { _, container ->
                 val configuration = LocalConfiguration.current
-                val screenWidth = configuration.screenWidthDp.dp
+                //val screenWidth = configuration.screenWidthDp.dp
                 Box(
                     modifier = Modifier
-                        .width(screenWidth * 0.73f)
-                        .padding(8.dp)
+                        .width(380.dp)
+                        .padding(start = 15.dp)
                         .clip(shape = RoundedCornerShape(8.dp))
                         .border(
                             color = Color.Black,
                             width = 1.dp,
                             shape = RoundedCornerShape(8.dp)
                         )
+                        //.height(1000.dp)
+
                 ) {
                     container() // Render the provided container!
                 }
