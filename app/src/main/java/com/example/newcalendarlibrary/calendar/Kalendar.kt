@@ -20,6 +20,7 @@ import KalendarOceanic
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.newcalendarlibrary.calendar.color.KalendarColors
+import com.example.newcalendarlibrary.events.AppointmentEvent
 import com.himanshoe.kalendar.ui.component.day.KalendarDayKonfig
 import com.himanshoe.kalendar.ui.component.header.KalendarTextKonfig
 import com.himanshoe.kalendar.ui.firey.DaySelectionMode
@@ -59,7 +60,9 @@ fun Kalendar(
     headerContent: (@Composable (Month, Int) -> Unit)? = null,
     onDayClick: (LocalDate, List<KalendarEvent>) -> Unit = { _, _ -> },
     onRangeSelected: (KalendarSelectedDayRange, List<KalendarEvent>) -> Unit = { _, _ -> },
-    onErrorRangeSelected: (RangeSelectionError) -> Unit = {}
+    onErrorRangeSelected: (RangeSelectionError) -> Unit = {},
+    onEvent : (AppointmentEvent) -> Unit
+
 ) {
     Kalendar(
         currentDay = currentDay,
@@ -75,7 +78,8 @@ fun Kalendar(
         headerContent = headerContent,
         events = KalendarEvents(),
         onRangeSelected = onRangeSelected,
-        onErrorRangeSelected = onErrorRangeSelected
+        onErrorRangeSelected = onErrorRangeSelected,
+        onEvent = onEvent
     )
 }
 
@@ -112,7 +116,9 @@ fun Kalendar(
     headerContent: (@Composable (Month, Int) -> Unit)? = null,
     onDayClick: (LocalDate, List<KalendarEvent>) -> Unit = { _, _ -> },
     onRangeSelected: (KalendarSelectedDayRange, List<KalendarEvent>) -> Unit = { _, _ -> },
-    onErrorRangeSelected: (RangeSelectionError) -> Unit = {}
+    onErrorRangeSelected: (RangeSelectionError) -> Unit = {},
+    onEvent : (AppointmentEvent) -> Unit
+
 ) {
     when (kalendarType) {
         KalendarType.Oceanic -> {
@@ -147,7 +153,8 @@ fun Kalendar(
                 headerContent = headerContent,
                 daySelectionMode = daySelectionMode,
                 onRangeSelected = onRangeSelected,
-                onErrorRangeSelected = onErrorRangeSelected
+                onErrorRangeSelected = onErrorRangeSelected,
+                onEvent = onEvent
             )
         }
     }

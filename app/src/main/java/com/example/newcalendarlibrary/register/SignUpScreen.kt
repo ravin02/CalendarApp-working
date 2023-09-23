@@ -43,8 +43,8 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.newcalendarlibrary.R
 import com.example.newcalendarlibrary.navigation.Screens
-import com.example.newcalendarlibrary.room.UserRepository
-import com.example.newcalendarlibrary.room.Users
+import com.example.newcalendarlibrary.room.user.UserRepository
+import com.example.newcalendarlibrary.room.user.Users
 import kotlinx.coroutines.launch
 
 
@@ -120,7 +120,7 @@ fun SignUpScreen(
                 LottieAnimation(
                     signUp,
                     progress,
-                    modifier = Modifier.size(120.dp)
+                    modifier = Modifier.size(100.dp)
                 )
 
             }
@@ -256,7 +256,7 @@ private suspend fun onSaveClick(
     }
 }
 
-fun showEmptyFieldsToast(context: Context) {
+ fun showEmptyFieldsToast(context: Context) {
     Toast.makeText(context, "Please make sure to fill all fields", Toast.LENGTH_SHORT).show()
 }
 
