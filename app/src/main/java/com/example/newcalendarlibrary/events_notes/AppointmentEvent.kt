@@ -1,4 +1,4 @@
-package com.example.newcalendarlibrary.events
+package com.example.newcalendarlibrary
 
 import com.example.newcalendarlibrary.room.events.Event
 import com.example.newcalendarlibrary.room.notes.Note

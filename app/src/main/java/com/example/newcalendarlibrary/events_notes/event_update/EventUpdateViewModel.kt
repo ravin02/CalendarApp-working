@@ -1,4 +1,4 @@
-package com.example.newcalendarlibrary.events.event_update
+package com.example.newcalendarlibrary.event_update
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

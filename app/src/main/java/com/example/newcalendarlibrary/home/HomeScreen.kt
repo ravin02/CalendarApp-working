@@ -3,6 +3,7 @@ package com.example.newcalendarlibrary.home
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +22,6 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -41,15 +41,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.newcalendarlibrary.NoteEvent
 import com.example.newcalendarlibrary.R
 import com.example.newcalendarlibrary.color_picker.colourSaver
-import com.example.newcalendarlibrary.events.AppointmentEvent
-import com.example.newcalendarlibrary.events.NoteEvent
-import com.example.newcalendarlibrary.events.NoteState
-import com.example.newcalendarlibrary.events.create_notes.CreateNoteScreen
-import com.example.newcalendarlibrary.room.events.Event
+import com.example.newcalendarlibrary.create_notes.NoteState
 import com.example.newcalendarlibrary.room.notes.Note
 
+
+private const val TAG = "HomeScreen"
 @SuppressLint("QueryPermissionsNeeded")
 @Composable
 fun HomeScreen(
@@ -59,12 +58,16 @@ fun HomeScreen(
     selectedColor: Color,
     state: NoteState,
     onEvent: (NoteEvent) -> Unit,
+    userId : Int // load note based on user login info
 ) {
     var currentlySelected by rememberSaveable(saver = colourSaver()) { mutableStateOf(colors[0]) }
     val context = LocalContext.current
+    // Testing login user
+    Toast.makeText(context, "Welcome $userId", Toast.LENGTH_SHORT).show()
 
     if (state.isAddingNote) {
-        CreateNoteScreen(onEvent = onEvent, state = state, navController = navController)
+       // CreateNoteScreen(onEvent = onEvent, state = state, navController = navController)
+        Toast.makeText(context, "Add notes", Toast.LENGTH_SHORT).show()
     }
 
     // Define the URL you want to open
@@ -100,6 +103,7 @@ fun HomeScreen(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = modifier.clickable {
                     onEvent(NoteEvent.ShowDialog)
+                   Log.d(TAG,"Note btn clicked")
                 }
             ) {
                 Icon(

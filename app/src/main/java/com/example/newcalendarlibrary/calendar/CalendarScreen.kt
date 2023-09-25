@@ -1,7 +1,6 @@
 package com.example.newcalendarlibrary.calendar
 
 import android.content.Context
-import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -34,9 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.newcalendarlibrary.events.AddEventScreen
-import com.example.newcalendarlibrary.events.AppointmentEvent
-import com.example.newcalendarlibrary.events.AppointmentState
+import com.example.newcalendarlibrary.AddEventScreen
+import com.example.newcalendarlibrary.AppointmentEvent
 import com.example.newcalendarlibrary.room.events.Event
 import com.himanshoe.kalendar.ui.firey.DaySelectionMode
 import kotlinx.datetime.Clock
@@ -45,11 +43,11 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import com.example.newcalendarlibrary.R
+import com.example.newcalendarlibrary.create_notes.AppointmentState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
-import java.util.Calendar
 
 @Composable
 fun CalendarScreen(

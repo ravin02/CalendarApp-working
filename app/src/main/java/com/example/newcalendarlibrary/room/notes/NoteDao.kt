@@ -8,18 +8,27 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.newcalendarlibrary.room.events.Event
 import kotlinx.coroutines.flow.Flow
+
 @Dao
-interface NoteDao {
+interface NoteDAO {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertNote(note: Note)
+    @Query("SELECT * FROM Notes WHERE notes.userId=:userId")
+    suspend fun getNotesByUserId(userId: Int): List<Note>
+
+    @Query("SELECT * FROM Notes WHERE notes.id=:id")
+    suspend fun getNoteById(id: Int): Note?
+
+    @Query("SELECT * FROM Notes ORDER BY dateUpdated DESC")
+    fun getNotes(): List<Note>
+
     @Delete
-    suspend fun deleteNote(note: Note)
+    fun deleteNote(note: Note) : Int
 
-    @Query("SELECT * FROM note ORDER BY title ASC")
-    fun getNoteOrderedByTitle(): Flow<List<Note>>
+    @Update
+    fun updateNote(note: Note) : Int
 
-    @Query("SELECT * FROM note ORDER BY description ASC")
-    fun getNoteOrderedByDescription(): Flow<List<Note>>
+    @Insert
+    fun insertNote(note: Note)
+
 
 }

@@ -1,4 +1,4 @@
-package com.example.newcalendarlibrary.events
+package com.example.newcalendarlibrary
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.example.newcalendarlibrary.color_picker.ColorViewModel
 import com.example.newcalendarlibrary.color_picker.ColourButton
 import com.example.newcalendarlibrary.color_picker.colors
+import com.example.newcalendarlibrary.create_notes.AppointmentState
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn

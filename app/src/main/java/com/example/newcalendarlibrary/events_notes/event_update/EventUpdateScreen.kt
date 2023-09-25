@@ -1,4 +1,4 @@
-package com.example.newcalendarlibrary.events.event_update
+package com.example.newcalendarlibrary.event_update
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
@@ -32,10 +33,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.newcalendarlibrary.R
-import com.example.newcalendarlibrary.events.AppointmentEvent
-import com.example.newcalendarlibrary.events.AppointmentState
-import com.example.newcalendarlibrary.navigation.BottomBarScreen
-import com.example.newcalendarlibrary.navigation.Screens
+import com.example.newcalendarlibrary.AppointmentEvent
+import com.example.newcalendarlibrary.create_notes.AppointmentState
+import com.example.newcalendarlibrary.navigation.components.BottomBarScreen
 import com.example.newcalendarlibrary.room.events.EventDao
 import kotlinx.coroutines.launch
 import java.util.Currency
@@ -65,6 +65,7 @@ fun EventUpdateScreen(
             onDismissRequest = { onEvent(AppointmentEvent.HideDialog) },
             // title = { Text(text = "Add Event")},
             shape = RoundedCornerShape(12.dp),
+            modifier = modifier.wrapContentSize(),
             text = {
                 Column(
                     modifier = modifier.fillMaxWidth(),
@@ -110,14 +111,14 @@ fun EventUpdateScreen(
             buttons = {
                 Box(
                     modifier = modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterEnd
+                    contentAlignment = Alignment.Center
                 ) {
                     Button(onClick = {
                         coroutineScope.launch {
                             viewModel.updateEventInDatabase(itemId = itemId)
                         }
                         Toast.makeText(context, "Event Updated", Toast.LENGTH_SHORT).show()
-                        navController.navigate(BottomBarScreen.Calendar.route)
+                        navController.navigateUp() // Going back to Calendar screen
                     }) {
                         Text(text = "Update")
                     }

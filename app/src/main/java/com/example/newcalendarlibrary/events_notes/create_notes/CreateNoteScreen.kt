@@ -1,4 +1,4 @@
-package com.example.newcalendarlibrary.events.create_notes
+package com.example.newcalendarlibrary.create_notes
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -11,12 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -28,19 +22,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.newcalendarlibrary.events.AppointmentEvent
-import com.example.newcalendarlibrary.events.AppointmentState
-import com.example.newcalendarlibrary.events.NoteEvent
-import com.example.newcalendarlibrary.events.NoteState
-import com.example.newcalendarlibrary.events.event_update.EventUpdateViewModel
-import com.example.newcalendarlibrary.events.event_update.EventUpdateViewModelFactory
-import com.example.newcalendarlibrary.navigation.BottomBarScreen
-import com.example.newcalendarlibrary.room.events.EventDao
-import com.example.newcalendarlibrary.room.notes.NoteDao
+import com.example.newcalendarlibrary.NoteEvent
 import kotlinx.coroutines.launch
 
+/*
 @Composable
 fun CreateNoteScreen(
     modifier: Modifier = Modifier,
@@ -117,4 +103,6 @@ fun CreateNoteScreen(
             }
         )
     }
-}
+}*/
+
+

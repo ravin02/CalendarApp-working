@@ -19,8 +19,8 @@ import KalendarFirey
 import KalendarOceanic
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.example.newcalendarlibrary.AppointmentEvent
 import com.example.newcalendarlibrary.calendar.color.KalendarColors
-import com.example.newcalendarlibrary.events.AppointmentEvent
 import com.himanshoe.kalendar.ui.component.day.KalendarDayKonfig
 import com.himanshoe.kalendar.ui.component.header.KalendarTextKonfig
 import com.himanshoe.kalendar.ui.firey.DaySelectionMode

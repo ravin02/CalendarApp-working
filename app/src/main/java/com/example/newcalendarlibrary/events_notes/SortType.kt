@@ -1,4 +1,4 @@
-package com.example.newcalendarlibrary.events
+package com.example.newcalendarlibrary
 
 enum class SortType{
     TITLE , DESCRIPTION

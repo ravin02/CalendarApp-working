@@ -1,5 +1,6 @@
-package com.example.newcalendarlibrary.events
+package com.example.newcalendarlibrary.create_notes
 
+import com.example.newcalendarlibrary.SortType
 import com.example.newcalendarlibrary.room.events.Event
 import com.example.newcalendarlibrary.room.notes.Note
 
@@ -17,6 +18,8 @@ data class NoteState(
     val title : String = "",
     val description : String = "",
     val isAddingNote : Boolean = false,
-    val sortType: SortType = SortType.TITLE
+    val sortType: SortType = SortType.TITLE,
+    val noteId : Long = 0,
+    val userId : Long = 0
 
 )

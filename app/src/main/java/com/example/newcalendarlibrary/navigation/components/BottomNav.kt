@@ -1,4 +1,4 @@
-package com.example.newcalendarlibrary.navigation
+package com.example.newcalendarlibrary.navigation.components
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
@@ -24,18 +24,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.BottomNavigation
 import androidx.compose.material.Card
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
-import com.example.newcalendarlibrary.events.AppointmentEvent
-import com.example.newcalendarlibrary.events.AppointmentState
-import com.example.newcalendarlibrary.events.NoteEvent
-import com.example.newcalendarlibrary.events.NoteState
+import com.example.newcalendarlibrary.AppointmentEvent
+import com.example.newcalendarlibrary.NoteEvent
+import com.example.newcalendarlibrary.create_notes.AppointmentState
+import com.example.newcalendarlibrary.create_notes.NoteState
+import com.example.newcalendarlibrary.events_notes.NotesViewModel
+import com.example.newcalendarlibrary.navigation.HomeNavGraph
+import com.example.newcalendarlibrary.navigation.Screens
 import com.example.newcalendarlibrary.room.events.EventDao
 import com.example.newcalendarlibrary.ui.theme.Purple200
 
@@ -43,71 +48,69 @@ import com.example.newcalendarlibrary.ui.theme.Purple200
 @Composable
 fun BottomNav(
     onEvent: (AppointmentEvent) -> Unit,
-    eventDao: EventDao, state: AppointmentState,
-    stateNote : NoteState,
-    onEventNote: (NoteEvent) -> Unit
+     eventDao: EventDao,
+    state: AppointmentState,
+    navController: NavHostController = rememberNavController(),
+    notesViewModel: NotesViewModel
+
 ) {
-    val navController = rememberNavController()
 
     Scaffold(
-        //  bottomBar = { BottomBar(navController = navController) },
-        topBar = { BottomBar(navController = navController) },
     ) {
-        NavGraph(
-            navController = navController,
+        HomeNavGraph(
+            state = state,
             onEvent = onEvent,
             eventDao = eventDao,
-            state = state,
-            stateNote = stateNote,
-            onEventNote = onEventNote
+            notesViewModel = notesViewModel,
+            navController = navController,
+            navigateToItemUpdate = { navController.navigate("${Screens.EventUpdateScreen.route}/${it}")}
         )
     }
 }
 
-
 @Composable
 fun BottomBar(navController: NavHostController) {
     val screens = listOf(
-        BottomBarScreen.Home,
-        BottomBarScreen.Calendar,
-        BottomBarScreen.Settings,
+        BottomBarScreen.Home, BottomBarScreen.SettingsScreen, BottomBarScreen.Calendar
     )
 
     val navStackBackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navStackBackEntry?.destination
+    val bottomBarDestination = screens.any { it.route == currentDestination?.route }
+    if (bottomBarDestination) {
+        BottomNavigation {
+            Card(
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 8.dp),
+                shape = RoundedCornerShape(15.dp),
+                elevation = (6.dp),
 
-    Card(
-        modifier = Modifier
-            .padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 8.dp),
-        shape = RoundedCornerShape(15.dp),
-        elevation = (6.dp),
-//        colors = CardDefaults.cardColors(Color(0xff0a2431))
+                ) {
 
-    ) {
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            screens.forEach { screen ->
-                AddItem(
-                    screen = screen,
-                    currentDestination = currentDestination,
-                    navController = navController
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    screens.forEach { screen ->
+                        AddItem(
+                            screen = screen,
+                            currentDestination = currentDestination,
+                            navController = navController
+                        )
+                    }
+                }
             }
         }
     }
-
 }
 
 @Composable
 fun RowScope.AddItem(
     screen: BottomBarScreen,
     currentDestination: NavDestination?,
-    navController: NavHostController
+    navController: NavController
 ) {
     val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
 
