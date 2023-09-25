@@ -88,7 +88,7 @@ fun LoginScreen(
                 LottieAnimation(
                     login,
                     progress,
-                    modifier = Modifier.size(120.dp)
+                    modifier = Modifier.size(200.dp)
                 )
 
             }
@@ -162,7 +162,7 @@ fun LoginScreen(
                         if (user != null) {
                             //Success
                             Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                            navController.navigate(Screens.CalendarScreen.route)
+                            navController.navigate(Screens.CalendarAppointmentScreen.route)
                         } else {
                             //Failure
                             Toast.makeText(context, "Login Failed", Toast.LENGTH_SHORT).show()

@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newcalendarlibrary.room.events.Event
 import com.example.newcalendarlibrary.room.events.EventDao
+import com.example.newcalendarlibrary.room.notes.Note
+import com.example.newcalendarlibrary.room.notes.NoteDao
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -77,6 +79,80 @@ class AppointmentViewModel(private val eventDao: EventDao) : ViewModel() {
             }
 
             is AppointmentEvent.SetDescription -> {
+                _state.update { it.copy(description = event.description) }
+            }
+
+        }
+
+
+    }
+}
+
+
+class NoteViewModel(private val noteDao: NoteDao) : ViewModel() {
+
+    private val _sortType = MutableStateFlow(SortType.TITLE)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val _notes = _sortType.flatMapLatest { sortType ->
+        when (sortType) {
+            SortType.TITLE -> noteDao.getNoteOrderedByTitle()
+            SortType.DESCRIPTION -> noteDao.getNoteOrderedByDescription()
+        }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+
+    }
+    private val _state = MutableStateFlow(NoteState())
+
+    val state = combine(_state, _sortType, _notes) { state, sortType, note ->
+        state.copy(notes = note, sortType = sortType)
+
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NoteState())
+
+
+    fun onEvent(event: NoteEvent) {
+        when (event) {
+
+            NoteEvent.HideDialog -> {
+                _state.update { it.copy(isAddingNote = false) }
+            }
+
+            NoteEvent.ShowDialog -> {
+                _state.update { it.copy(isAddingNote = true) }
+            }
+
+            NoteEvent.SaveNote -> {
+                val title = state.value.title
+                val description = state.value.description
+
+                if (title.isBlank() || description.isBlank()) {
+                    return
+                }
+
+                val noteSaved = Note(title = title, description = description)
+                viewModelScope.launch { noteDao.insertNote(note = noteSaved) }
+
+                _state.update {
+                    it.copy(
+                        title = "",
+                        description = "",
+                        isAddingNote = false
+                    )
+                }
+            }
+
+
+            is NoteEvent.DeleteNote-> {
+                viewModelScope.launch { noteDao.deleteNote(note = event.note) }
+            }
+
+            is NoteEvent.SetTitle -> {
+                _state.update { it.copy(
+                    title = event.title
+                ) }
+            }
+
+            is NoteEvent.SetDescription -> {
                 _state.update { it.copy(description = event.description) }
             }
 

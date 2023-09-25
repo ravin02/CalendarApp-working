@@ -1,17 +1,17 @@
 package com.example.newcalendarlibrary.calendar
 
+import android.content.Context
+import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,11 +25,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,11 +45,12 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import com.example.newcalendarlibrary.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.util.Calendar
 
-//object HomeDestination : NavigationDestination {
-//    override val route = "home"
-//    override val titleRes = R.string.app_name
-//}
 @Composable
 fun CalendarScreen(
     modifier: Modifier = Modifier,
@@ -100,38 +101,33 @@ fun CalendarScreen(
             }
             if (state.isAddingEvent) {
                 AddEventScreen(state = state, onEvent = onEvent)
+
             }
 
-//            LazyColumn(
-//                contentPadding = PaddingValues(16.dp),
-//                modifier = Modifier.fillMaxSize(),
-//                verticalArrangement = Arrangement.spacedBy(16.dp)
-//            ) {
-//                items(state.appointment) { appointment ->
-//                    EventCard(appointment = appointment, onEvent = onEvent,)
-//                }
-//            }
-
-            HomeBody(onEvent = onEvent, itemList = state.appointment, onItemClick = navigateToItemUpdate)
+            HomeBody(
+                onEvent = onEvent,
+                itemList = state.appointment,
+                onItemClick = navigateToItemUpdate,
+                modifier = modifier.padding(top = 20.dp)
+            )
 
         }
-
-
     }
 }
 
 @Composable
-fun HomeBody(
+private fun HomeBody(
     onEvent: (AppointmentEvent) -> Unit,
     itemList: List<Event>, onItemClick: (Int) -> Unit, modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier.fillMaxWidth()
     ) {
         if (itemList.isEmpty()) {
             Text(
-                text = "Oops!\\nNo items in the inventory.\\nTap + to add.",
+                text = "Please click on the date to add event",
                 textAlign = TextAlign.Center,
             )
         } else {
@@ -150,15 +146,15 @@ private fun InventoryList(
     onEvent: (AppointmentEvent) -> Unit,
     itemList: List<Event>, onItemClick: (Event) -> Unit, modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     LazyColumn(modifier = modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
         items(items = itemList, key = { it.id }) { item ->
             EventCard(
                 appointment = item,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier
+                    .padding(8.dp)
                     .clickable {
                         onItemClick(item)
-                       // Toast.makeText(context, "${item.id} is clicked", Toast.LENGTH_SHORT).show()
+                        // Toast.makeText(context, "${item.id} is clicked", Toast.LENGTH_SHORT).show()
                     },
                 onEvent = onEvent
             )
@@ -168,12 +164,13 @@ private fun InventoryList(
 
 
 @Composable
-fun EventCard(
+private fun EventCard(
     modifier: Modifier = Modifier,
     appointment: Event,
     onEvent: (AppointmentEvent) -> Unit,
 ) {
-
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     Card(
         modifier = modifier
             .fillMaxWidth(),
@@ -184,12 +181,12 @@ fun EventCard(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
             Column(
                 modifier = modifier
-                    .wrapContentSize()
                     .weight(1f)
             ) {
                 Text(text = appointment.title, fontSize = 32.sp, fontWeight = FontWeight.Bold)
@@ -209,8 +206,83 @@ fun EventCard(
                 )
             }
 
+            //export button here
+            ExportIconButton(
+                onClick = {
+                    /** Using Coroutine Dispatcher.Main to run long running File I/O process
+                    in the Main thread*/
+                    //In order to understand this you need to remove the coroutine scope and try to
+                    // run the app without using the coroutineScope. You will notice Huge performance
+                    // difference
 
+                    coroutineScope.launch(Dispatchers.Main) {
+                        exportEventToICS(context, appointment)
+
+                    }
+                },
+                contentDescription = "Export appointment"
+            )
         }
     }
-
 }
+
+@Composable
+ fun ExportIconButton(
+    onClick: () -> Unit,
+    contentDescription: String
+) {
+    IconButton(onClick = onClick) {
+        Icon(
+            painter = painterResource(id = R.drawable.export),
+            contentDescription = contentDescription,
+            modifier = Modifier.size(25.dp)
+        )
+    }
+}
+
+private fun exportEventToICS(context: Context, event: Event) {
+    val fileName = event.title.plus(".ics")
+    val dir = File(context.filesDir, "AppointmentExport")
+
+    if (!dir.exists()) {
+        dir.mkdir()
+    }
+
+    val file = File(dir, fileName)
+    val outputStream = FileOutputStream(file)
+    val icsContent = buildICSContent(event)
+
+    try {
+        outputStream.write(icsContent.toByteArray())
+        outputStream.close()
+        Toast.makeText(context, "Event exported to $fileName", Toast.LENGTH_SHORT).show()
+    } catch (e: Exception) {
+        Toast.makeText(context, "Error exporting event", Toast.LENGTH_SHORT).show()
+    }
+}
+
+private fun buildICSContent(event: Event): String {
+//    val cal = Calendar.getInstance()
+//    val dateFormat = "yyyyMMdd'T'HHmmss'Z'"
+//    val startTime = event.startTime.format(dateFormat)
+//    val endTime = event.endTime.format(dateFormat)
+
+    // This is the ics file content and you can adjust it accordingly
+    val icsContent = """
+        BEGIN:VCALENDAR
+        VERSION:2.0
+        PRODID:-//My Calendar//EN
+        BEGIN:VEVENT
+        SUMMARY:${event.title}
+        DESCRIPTION:${event.description}
+        END:VEVENT
+        END:VCALENDAR
+    """.trimIndent()
+
+    return icsContent
+}
+
+
+
+
+

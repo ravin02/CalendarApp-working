@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.newcalendarlibrary.color_picker.ColorViewModel
 import com.example.newcalendarlibrary.color_picker.ColourButton
 import com.example.newcalendarlibrary.color_picker.colors
 import kotlinx.datetime.Clock
@@ -53,7 +54,8 @@ import java.util.Date
 fun AddEventScreen(
     modifier: Modifier = Modifier,
     state: AppointmentState,
-    onEvent: (AppointmentEvent) -> Unit
+    onEvent: (AppointmentEvent) -> Unit,
+    viewModel: ColorViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     Surface(modifier = modifier.fillMaxSize()) {
 
@@ -173,12 +175,14 @@ fun AddEventScreen(
                         onColorSelected = {},
                         modifier = modifier
                             .fillMaxWidth()
-                            .padding(start = 16.dp, end = 16.dp)
+                            .padding(start = 16.dp, end = 16.dp),
                     )
                     Spacer(modifier = modifier.padding(vertical = 5.dp))
 
                     OutlinedTextFieldMessage(
-                        modifier.fillMaxWidth().size(150.dp),
+                        modifier
+                            .fillMaxWidth()
+                            .size(150.dp),
                         state,
                         onEvent
                     )

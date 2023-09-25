@@ -1,9 +1,12 @@
 package com.example.newcalendarlibrary
 
+
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -11,8 +14,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.example.newcalendarlibrary.events.AppointmentViewModel
-import com.example.newcalendarlibrary.navigation.NavGraph
+import com.example.newcalendarlibrary.events.NoteViewModel
+import com.example.newcalendarlibrary.navigation.BottomNav
 import com.example.newcalendarlibrary.room.events.EventDatabase
+import com.example.newcalendarlibrary.room.notes.NoteDatabase
 import com.example.newcalendarlibrary.room.user.UserRepository
 import com.example.newcalendarlibrary.room.user.UsersDatabase
 import com.example.newcalendarlibrary.ui.theme.NewCalendarLibraryTheme
@@ -23,10 +28,15 @@ import kotlinx.coroutines.launch
 
 lateinit var userRepository: UserRepository
 
-class MainActivity : ComponentActivity() {
+ class MainActivity : ComponentActivity() {
 
     private val db by lazy {
         Room.databaseBuilder(applicationContext, EventDatabase::class.java, "appointment.db")
+            .build()
+    }
+
+    private val dbNote by lazy {
+        Room.databaseBuilder(applicationContext, NoteDatabase::class.java, "notes.db")
             .build()
     }
 
@@ -40,10 +50,20 @@ class MainActivity : ComponentActivity() {
         }
     )
 
-
+    private val viewModelNotes by viewModels<NoteViewModel>(
+        factoryProducer = {
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return NoteViewModel(dbNote.noteDao) as T
+                }
+            }
+        }
+    )
+    @RequiresApi(Build.VERSION_CODES.Q)
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         GlobalScope.launch(Dispatchers.IO) {
             val database =
@@ -70,16 +90,19 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             NewCalendarLibraryTheme {
-                val navController = rememberNavController()
                 val state by viewModel.state.collectAsState()
-                NavGraph(
-                    navController = navController,
-                    state = state,
+                val stateNote by viewModelNotes.state.collectAsState()
+                BottomNav(
                     onEvent = viewModel::onEvent,
-                    eventDao = db.eventDao
+                    state = state,
+                    eventDao = db.eventDao,
+                    stateNote = stateNote,
+                    onEventNote = viewModelNotes::onEvent
                 )
             }
         }
     }
-}
+
+}//activity
+
 

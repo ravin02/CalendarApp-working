@@ -23,7 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
 
+
+// You can add as much colors as you like :)
 val colors = listOf(
+    Color(0xFFFFFFFF),
     Color(0xFFEF9A9A),
     Color(0xFFF48FB1),
     Color(0xFF80CBC4),
@@ -34,8 +37,6 @@ val colors = listOf(
     Color(0xFFCE93D8),
     Color(0xFFB39DDB)
 )
-
-
 
 @Composable
 fun ColourButton(colors: List<Color>, onColorSelected: (Color) -> Unit,modifier: Modifier = Modifier) {

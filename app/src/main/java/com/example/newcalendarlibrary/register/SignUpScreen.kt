@@ -120,7 +120,7 @@ fun SignUpScreen(
                 LottieAnimation(
                     signUp,
                     progress,
-                    modifier = Modifier.size(100.dp)
+                    modifier = Modifier.size(200.dp)
                 )
 
             }
