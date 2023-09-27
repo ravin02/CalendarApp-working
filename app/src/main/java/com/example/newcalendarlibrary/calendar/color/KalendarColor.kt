@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 @Stable
 @SuppressWarnings("MagicNumber")
 private val backgroundColor = listOf(
+    // List of background colors in hexadecimal format
     Color(0xffF7CFD3),
     Color(0xffEFBDCF),
     Color(0xffDBBFE4),
@@ -33,6 +34,7 @@ private val backgroundColor = listOf(
 @Stable
 @SuppressWarnings("MagicNumber")
 private val kalendarBackgroundColor = listOf(
+    // List of Kalendar background colors, including Color constants and hexadecimal values
     Color.White,
     Color(0xFFFCEFFE),
     Color(0xFFFDF2FE),
@@ -50,6 +52,7 @@ private val kalendarBackgroundColor = listOf(
 @Stable
 @SuppressWarnings("MagicNumber")
 private val headerColors = listOf(
+    // List of header colors in hexadecimal format
     Color(0xFFC39EA1),
     Color(0xFFBB8D9E),
     Color(0xFFAA8FB1),
@@ -79,6 +82,7 @@ data class KalendarColor(
     companion object {
 
         internal fun previewDefault() = KalendarColor(
+            // Create a KalendarColor instance with default background, day, and header colors
             kalendarBackgroundColor.first(), backgroundColor.first(), headerColors.first()
         )
     }
@@ -101,6 +105,7 @@ data class KalendarColors(
          * @return The default [KalendarColors] instance.
          */
         fun default(): KalendarColors {
+            // Create a list of KalendarColor instances based on predefined background, day, and header colors
             val colors = List(TOTAL_MONTH) { index ->
                 KalendarColor(
                     kalendarBackgroundColor[index],

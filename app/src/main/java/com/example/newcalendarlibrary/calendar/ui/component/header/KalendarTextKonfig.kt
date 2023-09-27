@@ -20,34 +20,33 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 
 /**
- * Configuration data class for styling the Kalendar header text.
- * @param kalendarTextColor The color of the header text.
- * @param kalendarTextSize The size of the header text.
- */
+
+Configuration data class for styling the Kalendar header text.*
+@param kalendarTextColor The color of the header text.
+@param kalendarTextSize The size of the header text.
+*/
 @Immutable
 data class KalendarTextKonfig(
-    val kalendarTextColor: Color,
-    val kalendarTextSize: TextUnit
+    val kalendarTextColor: Color,  // Color of the header text
+    val kalendarTextSize: TextUnit  // Size of the header text
 ) {
     companion object {
         /**
-         * Creates a default configuration with the specified text color.
-         * @param color The color of the header text.
-         * @return The default configuration.
-         */
-        internal fun default(color: Color) = KalendarTextKonfig(
-            kalendarTextColor = color,
-            kalendarTextSize = 24.sp
-        )
 
-        /**
-         * Creates a preview default configuration for previewing purposes.
-         * @return The preview default configuration.
-         */
-        @SuppressWarnings("MagicNumber")
-        internal fun previewDefault() = KalendarTextKonfig(
-            kalendarTextSize = 24.sp,
-            kalendarTextColor = Color(0xFFD2827A)
-        )
+        Creates a default configuration with the specified text color.*
+        @param color The color of the header text.
+        @return The default configuration.*/
+        internal fun default(color: Color) = KalendarTextKonfig(
+            kalendarTextColor = color,  // Set the specified color as text color
+            kalendarTextSize = 24.sp)  // Default text size
+
+            /**
+
+            Creates a preview default configuration for previewing purposes.*
+            @return The preview default configuration.
+             */
+            @SuppressWarnings("MagicNumber")
+            internal fun previewDefault() = KalendarTextKonfig(
+                kalendarTextSize = 24.sp,  // Default text size for preview
+                kalendarTextColor = Color(0xFFD2827A) )} // Default text color for preview)
     }
-}

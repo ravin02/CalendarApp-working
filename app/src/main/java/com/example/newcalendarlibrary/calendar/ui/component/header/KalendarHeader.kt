@@ -65,14 +65,15 @@ import java.util.Locale
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun KalendarHeader(
-    month: Month,
-    year: Int,
-    kalendarTextKonfig: KalendarTextKonfig,
-    modifier: Modifier = Modifier,
-    onPreviousClick: () -> Unit = {},
-    onNextClick: () -> Unit = {},
-    arrowShown: Boolean = true
+    month: Month,  // The current month to display
+    year: Int,  // The current year to display
+    kalendarTextKonfig: KalendarTextKonfig,  // Configuration for styling the header text
+    modifier: Modifier = Modifier,  // Modifier for styling the header
+    onPreviousClick: () -> Unit = {},  // Callback for the previous arrow button click
+    onNextClick: () -> Unit = {},  // Callback for the next arrow button click
+    arrowShown: Boolean = true  // Determines whether the arrow buttons should be shown
 ) {
+    // Mutable state to track if the animation should proceed forward (true) or backward (false)
     var isNext by remember { mutableStateOf(true) }
 
     Row(
@@ -82,8 +83,10 @@ fun KalendarHeader(
             .padding(all = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        // Create text for the header based on the current month and year
         val titleText = remember(month, year) { getTitleText(month, year) }
 
+        // Animate the content change (header text) with a specific animation
         AnimatedContent(
             targetState = titleText,
             transitionSpec = {
@@ -104,6 +107,8 @@ fun KalendarHeader(
                 textAlign = TextAlign.Start
             )
         }
+
+        // Display arrow buttons if arrowShown is true
         if (arrowShown) {
             Row(
                 modifier = Modifier
@@ -111,6 +116,7 @@ fun KalendarHeader(
                     .align(Alignment.CenterVertically),
                 horizontalArrangement = Arrangement.End,
             ) {
+                // Previous month arrow button
                 KalendarIconButton(
                     modifier = Modifier.wrapContentSize(),
                     imageVector = Icons.Default.KeyboardArrowLeft,
@@ -120,6 +126,8 @@ fun KalendarHeader(
                         onPreviousClick()
                     }
                 )
+
+                // Next month arrow button
                 KalendarIconButton(
                     modifier = Modifier.wrapContentSize(),
                     imageVector = Icons.Default.KeyboardArrowRight,
@@ -169,9 +177,11 @@ private fun getTitleText(month: Month, year: Int): String {
     return "$monthDisplayName '$shortYear"
 }
 
+// Composable for previewing a KalendarHeader
 @MultiplePreviews
 @Composable
 fun KalendarHeaderPreview() {
+    // Display a preview of KalendarHeader for April 2023
     KalendarHeader(
         month = java.time.Month.APRIL,
         year = 2023,

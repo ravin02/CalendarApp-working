@@ -50,6 +50,7 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 
+
 /**
  * A composable representing a single day in the Kalendar.
  *
@@ -64,26 +65,30 @@ import kotlinx.datetime.todayIn
  */
 @Composable
 fun KalendarDay(
-    date: LocalDate,
-    kalendarColors: KalendarColor,
-    onDayClick: (LocalDate, List<KalendarEvent>) -> Unit,
-    selectedRange: KalendarSelectedDayRange?,
-    modifier: Modifier = Modifier,
-    selectedDate: LocalDate = date,
-    kalendarEvents: KalendarEvents = KalendarEvents(),
-    kalendarDayKonfig: KalendarDayKonfig = KalendarDayKonfig.default(),
+    date: LocalDate,  // The date corresponding to the day
+    kalendarColors: KalendarColor,  // The colors used for styling the Kalendar
+    onDayClick: (LocalDate, List<KalendarEvent>) -> Unit,  // Callback function invoked when the day is clicked
+    selectedRange: KalendarSelectedDayRange?,  // The selected date range in the Kalendar
+    modifier: Modifier = Modifier,  // Modifier to be applied to the composable
+    selectedDate: LocalDate = date,  // The currently selected date
+    kalendarEvents: KalendarEvents = KalendarEvents(),  // Events associated with the Kalendar
+    kalendarDayKonfig: KalendarDayKonfig = KalendarDayKonfig.default(),  // Configuration for the Kalendar day
 ) {
+    // Determine if the current day is selected
     val selected = selectedDate == date
+
+    // Determine if the day is the current day
     val currentDay = Clock.System.todayIn(TimeZone.currentSystemDefault()) == date
 
     Column(
+        // Apply various modifiers to the Column composable
         modifier = modifier
             .border(
                 border = getBorder(currentDay, kalendarDayKonfig.borderColor, selected),
                 shape = CircleShape
             )
             .clip(shape = CircleShape)
-            .clickable { onDayClick(date, kalendarEvents.events) }
+            .clickable { onDayClick(date, kalendarEvents.events) }  // Invoke onDayClick callback when clicked
             .dayBackgroundColor(
                 selected,
                 kalendarColors.dayBackgroundColor,
@@ -98,6 +103,7 @@ fun KalendarDay(
     ) {
         Text(
             text = date.dayOfMonth.toString(),
+            // Apply modifiers to the Text composable
             modifier = Modifier.wrapContentSize(),
             textAlign = TextAlign.Center,
             fontSize = kalendarDayKonfig.textSize,
@@ -105,6 +111,7 @@ fun KalendarDay(
             fontWeight = if (selected) FontWeight.Bold else FontWeight.SemiBold
         )
         Row {
+            // Display KalendarIndicator for events associated with the day
             kalendarEvents.events
                 .filter { it.date == date }
                 .take(3)
@@ -132,26 +139,35 @@ fun KalendarDay(
  * @return The border stroke to be applied.
  */
 private fun getBorder(currentDay: Boolean, color: Color, selected: Boolean): BorderStroke {
+    // Define an empty border with zero width and transparent color
     val emptyBorder = BorderStroke(0.dp, Color.Transparent)
+
+    // Determine the border based on the current day and selected state
     return if (currentDay && selected.not()) {
-        BorderStroke(1.dp, color)
+        BorderStroke(1.dp, color)  // Apply the border with the specified color and width
     } else {
         emptyBorder
     }
 }
 
+// Composable for previewing a KalendarDay
 @MultiplePreviews
 @Composable
 private fun KalendarDayPreview() {
+    // Get the current date and the previous date
     val date = Clock.System.todayIn(TimeZone.currentSystemDefault())
     val previous =
         Clock.System.todayIn(TimeZone.currentSystemDefault()).minus(1, DateTimeUnit.DAY)
+
+    // Create a list of KalendarEvent instances
     val events = (0..5).map {
         KalendarEvent(
             date = date,
             eventName = it.toString(),
         )
     }
+
+    // Display multiple KalendarDay composables for preview
     Row {
         KalendarDay(
             date = date,

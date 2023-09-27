@@ -38,42 +38,50 @@ fun CreateNote(
     navController: NavController,
     notesViewModel: NotesViewModel
 ) {
+    // Mutable state for the current note's text
     val currentNote = remember {
         mutableStateOf("")
     }
 
+    // Mutable state for the current note's title
     val currentTitle = remember {
         mutableStateOf("")
     }
 
+    // Mutable state for the save button's enabled state
     val saveButtonState = remember {
         mutableStateOf(false)
     }
 
+    // Mutable state for the current user
     val currentUser = remember {
         mutableStateOf(notesViewModel.userId.value)
     }
+
+    // Get the context
     val context = LocalContext.current
 
-
+    // Start composing the UI with NewCalendarLibraryTheme
     NewCalendarLibraryTheme {
+        // Create a Surface with a background color
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
+            // Create a Scaffold to provide a top app bar
             Scaffold(
                 topBar = {
                     AppBar(
                         title = "Create Note",
                         onIconClick = {
-
+                            // When the save icon is clicked, create the note and display a toast message
                             notesViewModel.createNote(
                                 currentTitle.value,
                                 currentNote.value,
                                 currentUser.value
                             )
-                            println(currentUser)
                             Toast.makeText(context, "Note is saved", Toast.LENGTH_SHORT).show()
                             navController.popBackStack()
                         },
                         icon = {
+                            // Icon for saving the note
                             Icon(
                                 imageVector = ImageVector.vectorResource(R.drawable.save),
                                 contentDescription = "save notes",
@@ -84,12 +92,13 @@ fun CreateNote(
                     )
                 },
             ) {
+                // Create a Column layout for the content
                 Column(
                     Modifier
                         .padding(12.dp)
                         .fillMaxSize()
                 ) {
-
+                    // Create a TextField for the note title
                     TextField(
                         value = currentTitle.value,
                         modifier = Modifier
@@ -97,6 +106,7 @@ fun CreateNote(
                             .clip(RoundedCornerShape(5.dp)),
                         onValueChange = { value ->
                             currentTitle.value = value
+                            // Enable the save button if both title and note have content
                             saveButtonState.value =
                                 currentTitle.value != "" && currentNote.value != ""
                         },
@@ -107,8 +117,11 @@ fun CreateNote(
                         ),
                         label = { Text(text = "Title") }
                     )
+
+                    // Add spacing between title and note fields
                     Spacer(modifier = Modifier.padding(12.dp))
 
+                    // Create a TextField for the note content
                     TextField(
                         value = currentNote.value,
                         modifier = Modifier
@@ -117,6 +130,7 @@ fun CreateNote(
                             .clip(RoundedCornerShape(5.dp)),
                         onValueChange = { value ->
                             currentNote.value = value
+                            // Enable the save button if both title and note have content
                             saveButtonState.value =
                                 currentTitle.value != "" && currentNote.value != ""
                         },
@@ -128,7 +142,6 @@ fun CreateNote(
                         label = { Text(text = "Note") }
                     )
                 }
-
             }
         }
     }

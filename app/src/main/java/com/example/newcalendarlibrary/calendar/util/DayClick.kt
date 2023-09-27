@@ -23,14 +23,18 @@ internal fun onDayClicked(
     onRangeSelected: (KalendarSelectedDayRange, List<KalendarEvent>) -> Unit = { _, _ -> },
     onDayClick: (LocalDate, List<KalendarEvent>) -> Unit = { _, _ -> }
 ) {
+    // Handle the day click based on the day selection mode
     when (daySelectionMode) {
         DaySelectionMode.Single -> {
+            // Invoke the callback for a single day click
             onDayClick(date, events)
         }
 
         DaySelectionMode.Range -> {
+            // Handle day click for range selection mode
             val range = selectedRange.value
             if (range != null) {
+                // Update the selected range based on the current state
                 selectedRange.value = when {
                     range.isEmpty() != false -> KalendarSelectedDayRange(start = date, end = date)
                     range.isSingleDate() -> KalendarSelectedDayRange(start = range.start, end = date)
@@ -39,10 +43,12 @@ internal fun onDayClicked(
             }
 
             selectedRange.value?.let { rangeDates ->
+                // Retrieve events within the selected date range
                 val selectedEvents = events
                     .filter { it.date in (rangeDates.start..rangeDates.end) }
                     .toList()
 
+                // Invoke the callback with the selected range and associated events
                 onRangeSelected(rangeDates, selectedEvents)
             }
         }

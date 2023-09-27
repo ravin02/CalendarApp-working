@@ -26,9 +26,13 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,9 +50,12 @@ import com.example.newcalendarlibrary.R
 import com.example.newcalendarlibrary.color_picker.colourSaver
 import com.example.newcalendarlibrary.create_notes.NoteState
 import com.example.newcalendarlibrary.room.notes.Note
+import com.example.newcalendarlibrary.ui.viewmodel.AddEventViewModel
 
 
 private const val TAG = "HomeScreen"
+
+// Composable function for the HomeScreen
 @SuppressLint("QueryPermissionsNeeded")
 @Composable
 fun HomeScreen(
@@ -58,15 +65,15 @@ fun HomeScreen(
     selectedColor: Color,
     state: NoteState,
     onEvent: (NoteEvent) -> Unit,
-    userId : Int // load note based on user login info
+    userId: Int // load note based on user login info
 ) {
     var currentlySelected by rememberSaveable(saver = colourSaver()) { mutableStateOf(colors[0]) }
     val context = LocalContext.current
+
     // Testing login user
     Toast.makeText(context, "Welcome $userId", Toast.LENGTH_SHORT).show()
 
     if (state.isAddingNote) {
-       // CreateNoteScreen(onEvent = onEvent, state = state, navController = navController)
         Toast.makeText(context, "Add notes", Toast.LENGTH_SHORT).show()
     }
 
@@ -92,18 +99,32 @@ fun HomeScreen(
         }
     }
 
-
-    //UI
+    // UI
     Surface(modifier = modifier.fillMaxSize(), color = selectedColor) {
         Column(
             modifier = modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            var tabIndex by remember { mutableStateOf(0) }
+
+            val tabs = listOf("Today", "This Week")
+
+            ElevatedCard {
+                TabRow(selectedTabIndex = tabIndex) {
+                    tabs.forEachIndexed { index, title ->
+                        Tab(text = { Text(title) },
+                            selected = tabIndex == index,
+                            onClick = { tabIndex = index }
+                        )
+                    }
+                }
+            }
+
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = modifier.clickable {
                     onEvent(NoteEvent.ShowDialog)
-                   Log.d(TAG,"Note btn clicked")
+                    Log.d(TAG, "Note btn clicked")
                 }
             ) {
                 Icon(
@@ -116,7 +137,6 @@ fun HomeScreen(
             }
 
             NotesList(onEvent = onEvent, itemList = state.notes, onItemClick = {})
-
         }
         Box(contentAlignment = Alignment.BottomEnd) {
             FloatingActionButton(
@@ -130,14 +150,15 @@ fun HomeScreen(
             }
         }
     }
-
 }
 
-
+// Composable function for displaying a list of notes
 @Composable
 fun NotesList(
     onEvent: (NoteEvent) -> Unit,
-    itemList: List<Note>, onItemClick: (Int) -> Unit, modifier: Modifier = Modifier
+    itemList: List<Note>,
+    onItemClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -157,18 +178,20 @@ fun NotesList(
             )
         }
     }
-
 }
 
+// Composable function for displaying a lazy column of notes
 @Composable
 private fun InventoryList(
     onEvent: (NoteEvent) -> Unit,
-    itemList: List<Note>, onItemClick: (Note) -> Unit, modifier: Modifier = Modifier
+    itemList: List<Note>,
+    onItemClick: (Note) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     LazyColumn(modifier = modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
         items(items = itemList, key = { it.id }) { item ->
-            EventCard(
+            NoteCard(
                 note = item,
                 modifier = Modifier
                     .padding(8.dp)
@@ -181,14 +204,13 @@ private fun InventoryList(
     }
 }
 
-
+// Composable function for displaying a note card
 @Composable
-fun EventCard(
+fun NoteCard(
     modifier: Modifier = Modifier,
     note: Note,
-    onEvent: (NoteEvent) -> Unit,
+    onEvent: (NoteEvent) -> Unit
 ) {
-
     Card(
         modifier = modifier
             .fillMaxWidth(),
@@ -201,7 +223,6 @@ fun EventCard(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-
             Column(
                 modifier = modifier
                     .wrapContentSize()
@@ -223,9 +244,6 @@ fun EventCard(
                     contentDescription = "Delete contact"
                 )
             }
-
-
         }
     }
-
 }

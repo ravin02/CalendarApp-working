@@ -20,38 +20,42 @@ import androidx.compose.ui.graphics.Color
 import com.himanshoe.kalendar.ui.firey.KalendarSelectedDayRange
 import kotlinx.datetime.LocalDate
 
+// Constants for alpha values
 private const val FULL_ALPHA = 1f
 private const val TOWNED_DOWN_ALPHA = 0.4F
 
 /**
- * A modifier that applies the background color to a composable based on the day's selection state,
- * selected range, and specified color.
+
+A modifier that applies the background color to a composable based on the day's selection state,
+selected range, and specified color.
  *
- * @param selected Whether the day is selected.
- * @param color The color to be applied as the background.
- * @param date The date corresponding to the day.
- * @param selectedRange The selected date range.
+@param selected Whether the day is selected.
+@param color The color to be applied as the background.
+@param date The date corresponding to the day.
+@param selectedRange The selected date range.
  *
- * @return The modified modifier.
+@return The modified modifier.
  */
 fun Modifier.dayBackgroundColor(
-    selected: Boolean,
-    color: Color,
-    date: LocalDate,
-    selectedRange: KalendarSelectedDayRange?
+    selected: Boolean,  // Whether the day is selected
+    color: Color,  // The color to be applied as the background
+    date: LocalDate,  // The date corresponding to the day
+    selectedRange: KalendarSelectedDayRange?  // The selected date range
 ): Modifier {
+    // Check if the date is in the selected range
     val inRange = date == selectedRange?.start || date == selectedRange?.end
 
+    // Determine the background color based on selection and date range
     val backgroundColor = when {
-        selected -> color
+        selected -> color  // Use the provided color if the day is selected
         selectedRange != null && date in selectedRange.start..selectedRange.end -> {
             val alpha = if (inRange) FULL_ALPHA else TOWNED_DOWN_ALPHA
-            color.copy(alpha = alpha)
+            color.copy(alpha = alpha)  // Adjust alpha based on being in range or not
         }
-
-        else -> Color.Transparent
+        else -> Color.Transparent  // Use a transparent color if not selected or in range
     }
 
+    // Apply the background color as a modifier
     return this.then(
         background(backgroundColor)
     )

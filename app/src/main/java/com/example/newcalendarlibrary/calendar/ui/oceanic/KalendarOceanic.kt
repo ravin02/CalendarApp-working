@@ -77,68 +77,96 @@ import java.util.Locale
  */
 @Composable
 internal fun KalendarOceanic(
-    modifier: Modifier = Modifier,
-    daySelectionMode: DaySelectionMode = DaySelectionMode.Single,
-    currentDay: LocalDate? = null,
-    showLabel: Boolean = true,
-    kalendarHeaderTextKonfig: KalendarTextKonfig? = null,
-    kalendarColors: KalendarColors = KalendarColors.default(),
-    events: KalendarEvents = KalendarEvents(),
-    labelFormat: (DayOfWeek) -> String = {
+    // Parameters for configuring the calendar component
+    modifier: Modifier = Modifier,                               // Modifier for styling or positioning
+    daySelectionMode: DaySelectionMode = DaySelectionMode.Single, // Mode for selecting days
+    currentDay: LocalDate? = null,                                // Current day to highlight
+    showLabel: Boolean = true,                                    // Flag to show day labels
+    kalendarHeaderTextKonfig: KalendarTextKonfig? = null,        // Configuration for header text styling
+    kalendarColors: KalendarColors = KalendarColors.default(),   // Colors for the calendar
+    events: KalendarEvents = KalendarEvents(),                   // Events to display in the calendar
+    labelFormat: (DayOfWeek) -> String = {                        // Function for generating day labels
         it.getDisplayName(
             TextStyle.SHORT,
             Locale.getDefault()
         )
     },
-    kalendarDayKonfig: KalendarDayKonfig = KalendarDayKonfig.default(),
-    dayContent: @Composable ((LocalDate) -> Unit)? = null,
-    headerContent: @Composable ((Month, Int) -> Unit)? = null,
-    onDayClick: (LocalDate, List<KalendarEvent>) -> Unit = { _, _ -> },
-    onRangeSelected: (KalendarSelectedDayRange, List<KalendarEvent>) -> Unit = { _, _ -> },
-    onErrorRangeSelected: (RangeSelectionError) -> Unit = {}
+    kalendarDayKonfig: KalendarDayKonfig = KalendarDayKonfig.default(),  // Configuration for styling days
+    dayContent: @Composable ((LocalDate) -> Unit)? = null,        // Content for each day
+    headerContent: @Composable ((Month, Int) -> Unit)? = null,    // Content for calendar header
+    onDayClick: (LocalDate, List<KalendarEvent>) -> Unit = { _, _ -> },  // Callback for day click
+    onRangeSelected: (KalendarSelectedDayRange, List<KalendarEvent>) -> Unit = { _, _ -> }, // Callback for range selection
+    onErrorRangeSelected: (RangeSelectionError) -> Unit = {}      // Callback for error in range selection
 ) {
-    val today = currentDay ?: Clock.System.todayIn(TimeZone.currentSystemDefault())
-    val weekValue = remember { mutableStateOf(today.getNext7Dates()) }
-    val yearAndMonth = getCurrentMonthAndYear(weekValue.value)
-    var selectedDate by remember { mutableStateOf(today) }
-    val currentMonthIndex = yearAndMonth.first.value.minus(1)
-    val selectedRange = remember { mutableStateOf<KalendarSelectedDayRange?>(null) }
 
+// Get the current day if not provided
+    val today = currentDay ?: Clock.System.todayIn(TimeZone.currentSystemDefault())
+
+    // Initialize the week value with the next 7 dates from today
+    val weekValue = remember { mutableStateOf(today.getNext7Dates()) }
+
+    // Get the current month and year
+    val yearAndMonth = getCurrentMonthAndYear(weekValue.value)
+
+    // Initialize selected date with today
+    var selectedDate by remember { mutableStateOf(today) }
+
+    // Calculate the index of the current month in the colors list
+    val currentMonthIndex = yearAndMonth.first.value.minus(1)
+
+    // Initialize selected date range
+    val selectedRange = remember { mutableStateOf<KalendarSelectedDayRange?>(null) }
     Column(
+        // Column configuration using a Modifier
         modifier = modifier
             .background(
-                color = kalendarColors.color[currentMonthIndex].backgroundColor
+                color = kalendarColors.color[currentMonthIndex].backgroundColor // Set background color
             )
-            .wrapContentHeight()
-            .fillMaxWidth()
-            .padding(all = 8.dp)
+            .wrapContentHeight()  // Wrap content height
+            .fillMaxWidth()  // Fill maximum width
+            .padding(all = 8.dp)  // Padding on all sides
     ) {
+        // Content inside the Column
+
+        // Check if a custom header content is provided
         if (headerContent != null) {
-            headerContent(yearAndMonth.first, yearAndMonth.second)
+            headerContent(yearAndMonth.first, yearAndMonth.second) // Call the provided headerContent function
         } else {
+            // If no custom header content, use the KalendarHeader component
             KalendarHeader(
-                month = yearAndMonth.first,
-                year = yearAndMonth.second,
+                month = yearAndMonth.first,  // Current month
+                year = yearAndMonth.second,  // Current year
                 kalendarTextKonfig = kalendarHeaderTextKonfig ?: KalendarTextKonfig(
+                    // Use provided kalendarHeaderTextKonfig or default configuration
                     kalendarTextColor = kalendarColors.color[currentMonthIndex].headerTextColor,
                     kalendarTextSize = 24.sp
                 ),
                 onPreviousClick = {
+                    // Callback for previous button click
                     val firstDayOfDisplayedWeek = weekValue.value.first()
                     weekValue.value = firstDayOfDisplayedWeek.getPrevious7Dates()
                 },
                 onNextClick = {
+                    // Callback for next button click
                     val lastDayOfDisplayedWeek = weekValue.value.last().plus(1, DateTimeUnit.DAY)
                     weekValue.value = lastDayOfDisplayedWeek.getNext7Dates()
                 },
             )
         }
+
+        // Add vertical spacing between header and days
         Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+        // LazyRow to display a horizontal list of days
         LazyRow(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),  // Fill maximum width
             content = {
+                // Populate the LazyRow with items based on weekValue
                 itemsIndexed(weekValue.value) { _, item ->
+                    // Create a column for each day
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                        // Show the label for the day if showLabel is true
                         if (showLabel) {
                             Text(
                                 modifier = Modifier,
@@ -149,21 +177,27 @@ internal fun KalendarOceanic(
                                 textAlign = TextAlign.Center
                             )
                         }
+
+                        // Add vertical spacing between label and day content
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
+                        // Check if custom dayContent is provided
                         if (dayContent != null) {
-                            dayContent(item)
+                            dayContent(item)  // Call the provided dayContent function
                         } else {
+                            // If no custom dayContent, use the KalendarDay component
                             KalendarDay(
                                 date = item,
                                 kalendarColors = kalendarColors.color[currentMonthIndex],
                                 onDayClick = { clickedDate, event ->
+                                    // Callback for day click
                                     onDayClicked(
                                         clickedDate,
                                         event,
                                         daySelectionMode,
                                         selectedRange,
                                         onRangeSelected = { range, events ->
+                                            // Callback for range selection
                                             if (range.end < range.start) {
                                                 onErrorRangeSelected(RangeSelectionError.EndIsBeforeStart)
                                             } else {
@@ -171,6 +205,7 @@ internal fun KalendarOceanic(
                                             }
                                         },
                                         onDayClick = { newDate, clickedDateEvent ->
+                                            // Callback for day click
                                             selectedDate = newDate
                                             onDayClick(newDate, clickedDateEvent)
                                         }
@@ -195,14 +230,24 @@ internal fun KalendarOceanic(
  * @return A pair containing the current month and year.
  */
 private fun getCurrentMonthAndYear(weekValue: List<LocalDate>): Pair<Month, Int> {
+    // Get the month of the first date in the week
     val month = weekValue.first().month
+
+    // Get the year of the first date in the week
     val year = weekValue.first().year
+
+    // Return a pair of the current month and year
     return Pair(month, year)
 }
 
+/**
+ * Preview function for KalendarOceanic composable.
+ * This is used for previewing the composable in Android Studio.
+ */
 @MultiplePreviews
 @Composable
 fun KalendarOceanicPreview() {
+    // Create a preview of the KalendarOceanic component
     KalendarOceanic(
         currentDay = Clock.System.todayIn(
             TimeZone.currentSystemDefault()

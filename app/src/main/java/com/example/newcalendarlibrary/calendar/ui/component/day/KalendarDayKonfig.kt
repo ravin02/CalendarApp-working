@@ -22,30 +22,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
- * Configuration data class for customizing the appearance of a Kalendar day.
- *
- * @param size The size of the Kalendar day.
- * @param textSize The text size of the day.
- * @param textColor The text color of the day.
- * @param selectedTextColor The text color of the selected day.
- * @param borderColor The border color of the day.
+
+Configuration data class for customizing the appearance of a Kalendar day.*
+@param size The size of the Kalendar day.
+@param textSize The text size of the day.
+@param textColor The text color of the day.
+@param selectedTextColor The text color of the selected day.
+@param borderColor The border color of the day.
  */
 @Immutable
 data class KalendarDayKonfig(
-    val size: Dp,
-    val textSize: TextUnit,
-    val textColor: Color,
-    val selectedTextColor: Color,
-    val borderColor: Color = Color.Black,
+    val size: Dp,  // The size of the Kalendar day
+    val textSize: TextUnit,  // The text size of the day
+    val textColor: Color,  // The text color of the day
+    val selectedTextColor: Color,  // The text color of the selected day
+    val borderColor: Color = Color.Black,  // The border color of the day (default: Black)
 ) {
     companion object {
 
+        // Function to provide a default KalendarDayKonfig
         @SuppressWarnings("MagicNumber")
         fun default() = KalendarDayKonfig(
-            size = 56.dp,
-            textSize = 16.sp,
-            textColor = Color(0xFF413D4B),
-            selectedTextColor = Color.White
+            size = 56.dp,  // Default size
+            textSize = 16.sp,  // Default text size
+            textColor = Color(0xFF413D4B),  // Default text color
+            selectedTextColor = Color.White  // Default text color for the selected day
         )
     }
 }

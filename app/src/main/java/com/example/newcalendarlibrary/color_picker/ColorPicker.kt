@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
 
 
-// You can add as much colors as you like :)
+// You can add as much colors as you like
 val colors = listOf(
     Color(0xFFFFFFFF),
     Color(0xFFEF9A9A),
@@ -39,10 +39,12 @@ val colors = listOf(
 )
 
 @Composable
-fun ColourButton(colors: List<Color>, onColorSelected: (Color) -> Unit,modifier: Modifier = Modifier) {
+fun ColourButton(colors: List<Color>, onColorSelected: (Int) -> Unit, modifier: Modifier = Modifier, selected: Int = 0) {
+    // State variables to track color picker state and currently selected color
     var colorPickerOpen by rememberSaveable { mutableStateOf(false) }
-    var currentlySelected by rememberSaveable(saver = colourSaver()) { mutableStateOf(colors[0]) }
+    var currentlySelected by rememberSaveable(saver = colourSaver()) { mutableStateOf(colors[selected]) }
 
+    // Layout for displaying the color selection button
     Box(
         modifier = modifier
             .padding(top = 16.dp, start = 5.dp, end = 5.dp, bottom = 5.dp)
@@ -57,6 +59,7 @@ fun ColourButton(colors: List<Color>, onColorSelected: (Color) -> Unit,modifier:
                 colorPickerOpen = true
             }
     ) {
+        // Layout for arranging items horizontally
         Row(
             modifier = modifier
                 .fillMaxWidth()
@@ -64,10 +67,12 @@ fun ColourButton(colors: List<Color>, onColorSelected: (Color) -> Unit,modifier:
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Display text to instruct color selection
             Text(
                 text = "Select colour",
             )
 
+            // Display a canvas representing the currently selected color
             Canvas(
                 modifier = modifier
                     .size(30.dp)
@@ -83,50 +88,52 @@ fun ColourButton(colors: List<Color>, onColorSelected: (Color) -> Unit,modifier:
                     }
             ) {}
         }
-
     }
 
 
-
     if (colorPickerOpen) {
+        // Display a color selection dialog if the color picker is open
         TwoColorDialog(
             colorList = colors,
-            onDismiss = { colorPickerOpen = false },
-            currentlySelected = currentlySelected,
+            onDismiss = { colorPickerOpen = false }, // Handle dialog dismissal by setting colorPickerOpen to false
+            currentlySelected = currentlySelected, // Pass the currently selected color to the dialog
             onColorSelected = {
+                // Update the currently selected color and invoke the onColorSelected callback with the selected color index
                 currentlySelected = it
-                onColorSelected(it)
+                onColorSelected(colors.indexOf(it))
             }
         )
     }
 }
-
-
 @Composable
 private fun ColorDialog(
-    colorList: List<Color>,
-    onDismiss: (() -> Unit),
-    currentlySelected: Color,
-    onColorSelected: ((Color) -> Unit) // when the save button is clicked
+    colorList: List<Color>, // List of colors to display in the dialog
+    onDismiss: (() -> Unit), // Callback when the dialog is dismissed
+    currentlySelected: Color, // Currently selected color
+    onColorSelected: ((Color) -> Unit) // Callback when a color is selected
 ) {
-    val gridState = rememberLazyGridState()
+    val gridState = rememberLazyGridState() // Remember the state of the lazy grid
 
+    // Create an AlertDialog to display color options
     AlertDialog(
-        shape = RoundedCornerShape(20.dp),
-        backgroundColor = MaterialTheme.colors.background,
-        contentColor = MaterialTheme.colors.onBackground,
-        onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(20.dp), // Rounded corners for the dialog
+        backgroundColor = MaterialTheme.colors.background, // Set the dialog's background color
+        contentColor = MaterialTheme.colors.onBackground, // Set the content color
+        onDismissRequest = onDismiss, // Set the callback for dismissal
         text = {
+            // Display a grid of colors for selection
             LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                state = gridState
+                columns = GridCells.Fixed(3), // Display in 3 columns
+                state = gridState // Set the grid state
             ) {
+                // Iterate through the color list and display each color
                 items(colorList) { color ->
                     var borderWidth = 0.dp
                     if (currentlySelected == color) {
-                        borderWidth = 2.dp
+                        borderWidth = 2.dp // Highlight the selected color
                     }
 
+                    // Display individual color as a clickable element
                     Canvas(modifier = Modifier
                         .padding(16.dp)
                         .clip(RoundedCornerShape(20.dp))
@@ -135,46 +142,53 @@ private fun ColorDialog(
                             MaterialTheme.colors.onBackground.copy(alpha = 0.75f),
                             RoundedCornerShape(20.dp)
                         )
-                        .background(color)
-                        .requiredSize(70.dp)
+                        .background(color) // Set the color background
+                        .requiredSize(70.dp) // Set the required size
                         .clickable {
+                            // Trigger the onColorSelected callback and dismiss the dialog
                             onColorSelected(color)
                             onDismiss()
                         }
                     ) {
+                        // Content of the Canvas, in this case, displaying the color
                     }
                 }
             }
         },
-        confirmButton = {}
+        confirmButton = {} // No confirm button in this dialog
     )
 }
 
+
 @Composable
 private fun TwoColorDialog(
-    colorList: List<Color>,
-    onDismiss: (() -> Unit),
-    currentlySelected: Color,
-    onColorSelected: ((Color) -> Unit)
+    colorList: List<Color>, // List of colors to display in the dialog
+    onDismiss: (() -> Unit), // Callback when the dialog is dismissed
+    currentlySelected: Color, // Currently selected color
+    onColorSelected: ((Color) -> Unit) // Callback when a color is selected
 ) {
-    val gridState = rememberLazyGridState()
+    val gridState = rememberLazyGridState() // Remember the state of the lazy grid
 
+    // Create an AlertDialog to display color options
     AlertDialog(
-        shape = RoundedCornerShape(20.dp),
-        backgroundColor = MaterialTheme.colors.background,
-        contentColor = MaterialTheme.colors.onBackground,
-        onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(20.dp), // Rounded corners for the dialog
+        backgroundColor = MaterialTheme.colors.background, // Set the dialog's background color
+        contentColor = MaterialTheme.colors.onBackground, // Set the content color
+        onDismissRequest = onDismiss, // Set the callback for dismissal
         text = {
+            // Display a grid of colors for selection
             LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                state = gridState
+                columns = GridCells.Fixed(3), // Display in 3 columns
+                state = gridState // Set the grid state
             ) {
+                // Iterate through the color list and display each color
                 items(colorList) { color ->
                     var borderWidth = 0.dp
                     if (currentlySelected == color) {
-                        borderWidth = 2.dp
+                        borderWidth = 2.dp // Highlight the selected color
                     }
 
+                    // Display individual color as a clickable element
                     Canvas(modifier = Modifier
                         .padding(16.dp)
                         .clip(RoundedCornerShape(20.dp))
@@ -183,9 +197,10 @@ private fun TwoColorDialog(
                             MaterialTheme.colors.onBackground.copy(alpha = 0.75f),
                             RoundedCornerShape(20.dp)
                         )
-//                        .background(color)
-                        .requiredSize(70.dp)
+                        // .background(color) // Background color (commented out)
+                        .requiredSize(70.dp) // Set the required size
                         .clickable {
+                            // Trigger the onColorSelected callback and dismiss the dialog
                             onColorSelected(color)
                             onDismiss()
                         }
@@ -193,6 +208,7 @@ private fun TwoColorDialog(
                         val canvasWidth = size.width
                         val canvasHeight = size.height
 
+                        // Draw two paths to create a "two-color" effect
                         drawPath(Path().apply {
                             moveTo(0f, 0f)
                             lineTo(canvasWidth, 0f)
@@ -211,22 +227,27 @@ private fun TwoColorDialog(
                 }
             }
         },
-        confirmButton = {}
+        confirmButton = {} // No confirm button in this dialog
     )
 }
 
+// Utility function to save and restore Color state
 fun colourSaver() = Saver<MutableState<Color>, String>(
     save = { state -> state.value.toHexString() },
     restore = { value -> mutableStateOf(value.toColor()) }
 )
 
+// Extension function to convert Color to its hexadecimal representation
 fun Color.toHexString(): String {
+    // Convert the Color to its hexadecimal representation
     return String.format(
         "#%02x%02x%02x%02x", (this.alpha * 255).toInt(),
         (this.red * 255).toInt(), (this.green * 255).toInt(), (this.blue * 255).toInt()
     )
 }
 
+// Extension function to convert hexadecimal string to Color
 fun String.toColor(): Color {
+    // Convert the hexadecimal string to a Color object
     return Color(android.graphics.Color.parseColor(this))
 }

@@ -27,25 +27,26 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Composable function that renders a Kalendar indicator.
- *
- * @param index The index of the indicator.
- * @param size The size of the indicator.
- * @param color The color of the indicator.
- * @param modifier The modifier for the indicator.
+
+Composable function that renders a Kalendar indicator.*
+@param index The index of the indicator.
+@param size The size of the indicator.
+@param color The color of the indicator.
+@param modifier The modifier for the indicator.
  */
 @Composable
 fun KalendarIndicator(
-    index: Int,
-    size: Dp,
-    color: Color,
-    modifier: Modifier = Modifier,
+    index: Int,  // The index of the indicator
+    size: Dp,  // The size of the indicator
+    color: Color,  // The color of the indicator
+    modifier: Modifier = Modifier,  // Modifier for the indicator
 ) {
+    // Create a Box composable to represent the indicator
     Box(
         modifier = modifier
-            .padding(horizontal = 1.dp)
-            .clip(shape = CircleShape)
-            .background(color = color.copy(alpha = (index + 1) * 0.3f))
-            .size(size = size.div(12))
+            .padding(horizontal = 1.dp)  // Add horizontal padding to the indicator
+            .clip(shape = CircleShape)  // Clip the indicator to a circular shape
+            .background(color = color.copy(alpha = (index + 1) * 0.3f))  // Set the background color with adjusted alpha based on index
+            .size(size = size.div(12))  // Set the size of the indicator based on the provided size
     )
 }

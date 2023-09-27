@@ -45,9 +45,11 @@ import java.time.Month
  * @param onDayClick Callback function triggered when a day cell is clicked.
  * @param onRangeSelected Callback function triggered when a range of days is selected.
  * @param onErrorRangeSelected Callback function triggered when an error occurs during range selection.
+ * @param onEvent Callback function triggered when an appointment event occurs.
  */
 @Composable
 fun Kalendar(
+    // Parameters for the calendar component
     currentDay: LocalDate?,
     kalendarType: KalendarType,
     modifier: Modifier = Modifier,
@@ -61,9 +63,9 @@ fun Kalendar(
     onDayClick: (LocalDate, List<KalendarEvent>) -> Unit = { _, _ -> },
     onRangeSelected: (KalendarSelectedDayRange, List<KalendarEvent>) -> Unit = { _, _ -> },
     onErrorRangeSelected: (RangeSelectionError) -> Unit = {},
-    onEvent : (AppointmentEvent) -> Unit
-
+    onEvent: (AppointmentEvent) -> Unit
 ) {
+    // Call another Kalendar function with additional parameters
     Kalendar(
         currentDay = currentDay,
         kalendarType = kalendarType,
@@ -100,9 +102,11 @@ fun Kalendar(
  * @param onDayClick Callback function triggered when a day cell is clicked.
  * @param onRangeSelected Callback function triggered when a range of days is selected.
  * @param onErrorRangeSelected Callback function triggered when an error occurs during range selection.
+ * @param onEvent Callback function triggered when an appointment event occurs.
  */
 @Composable
 fun Kalendar(
+    // Parameters for the calendar component
     currentDay: LocalDate?,
     kalendarType: KalendarType,
     modifier: Modifier = Modifier,
@@ -117,11 +121,12 @@ fun Kalendar(
     onDayClick: (LocalDate, List<KalendarEvent>) -> Unit = { _, _ -> },
     onRangeSelected: (KalendarSelectedDayRange, List<KalendarEvent>) -> Unit = { _, _ -> },
     onErrorRangeSelected: (RangeSelectionError) -> Unit = {},
-    onEvent : (AppointmentEvent) -> Unit
-
+    onEvent: (AppointmentEvent) -> Unit
 ) {
+    // Choose the appropriate calendar based on the provided kalendarType
     when (kalendarType) {
         KalendarType.Oceanic -> {
+            // Invoke Oceanic calendar with provided parameters
             KalendarOceanic(
                 currentDay = currentDay,
                 modifier = modifier,
@@ -140,6 +145,7 @@ fun Kalendar(
         }
 
         KalendarType.Firey -> {
+            // Invoke Firey calendar with provided parameters
             KalendarFirey(
                 currentDay = currentDay,
                 modifier = modifier,

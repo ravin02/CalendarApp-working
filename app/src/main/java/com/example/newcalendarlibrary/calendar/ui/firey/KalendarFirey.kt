@@ -71,42 +71,66 @@ private val WeekDays = listOf("M", "T", "W", "T", "F", "S", "S")
  * @param onErrorRangeSelected Callback invoked when an error occurs during range selection.
  */
 @Composable
- fun KalendarFirey(
-    currentDay: LocalDate?,
-    daySelectionMode: DaySelectionMode,
-    modifier: Modifier = Modifier,
-    showLabel: Boolean = true,
-    kalendarHeaderTextKonfig: KalendarTextKonfig? = null,
-    kalendarColors: KalendarColors = KalendarColors.default(),
-    events: KalendarEvents = KalendarEvents(),
-    kalendarDayKonfig: KalendarDayKonfig = KalendarDayKonfig.default(),
-    dayContent: (@Composable (LocalDate) -> Unit)? = null,
-    headerContent: (@Composable (Month, Int) -> Unit)? = null,
-    onDayClick: (LocalDate, List<KalendarEvent>) -> Unit = { _, _ -> },
-    onRangeSelected: (KalendarSelectedDayRange, List<KalendarEvent>) -> Unit = { _, _ -> },
-    onErrorRangeSelected: (RangeSelectionError) -> Unit = {},
-    onEvent : (AppointmentEvent) -> Unit
+fun KalendarFirey(
+    currentDay: LocalDate?,  // The current selected day in the Kalendar
+    daySelectionMode: DaySelectionMode,  // The day selection mode in the Kalendar
+    modifier: Modifier = Modifier,  // Modifier for styling or positioning the Kalendar
+    showLabel: Boolean = true,  // Determines whether to show labels in the Kalendar
+    kalendarHeaderTextKonfig: KalendarTextKonfig? = null,  // Configuration for the Kalendar header text
+    kalendarColors: KalendarColors = KalendarColors.default(),  // Colors configuration for the Kalendar
+    events: KalendarEvents = KalendarEvents(),  // Events associated with the Kalendar
+    kalendarDayKonfig: KalendarDayKonfig = KalendarDayKonfig.default(),  // Configuration for each day in the Kalendar
+    dayContent: (@Composable (LocalDate) -> Unit)? = null,  // Custom content for rendering each day in the Kalendar
+    headerContent: (@Composable (Month, Int) -> Unit)? = null,  // Custom content for rendering the header of the Kalendar
+    onDayClick: (LocalDate, List<KalendarEvent>) -> Unit = { _, _ -> },  // Callback invoked when a day is clicked
+    onRangeSelected: (KalendarSelectedDayRange, List<KalendarEvent>) -> Unit = { _, _ -> },  // Callback invoked when a range of days is selected
+    onErrorRangeSelected: (RangeSelectionError) -> Unit = {},  // Callback invoked when an error occurs during range selection
+    onEvent: (AppointmentEvent) -> Unit  // Callback invoked when an appointment event occurs
 ) {
+    // Initialize today's date using the provided currentDay or the current system date.
     val today = currentDay ?: Clock.System.todayIn(TimeZone.currentSystemDefault())
+
+    // Initialize selectedRange with a nullable KalendarSelectedDayRange.
     val selectedRange = remember { mutableStateOf<KalendarSelectedDayRange?>(null) }
+
+    // Initialize selectedDate with today's date.
     val selectedDate = remember { mutableStateOf(today) }
+
+    // Initialize displayedMonth and displayedYear with today's month and year.
     val displayedMonth = remember { mutableStateOf(today.month) }
     val displayedYear = remember { mutableStateOf(today.year) }
+
+    // Extract currentMonth and currentYear from their respective states.
     val currentMonth = displayedMonth.value
     val currentYear = displayedYear.value
+
+    // Calculate the index of the current month.
     val currentMonthIndex = currentMonth.value.minus(1)
 
+    // Calculate the default header color based on the current month.
     val defaultHeaderColor = KalendarTextKonfig.default(
-        color = kalendarColors.color[currentMonthIndex].headerTextColor,
+        color = kalendarColors.color[currentMonthIndex].headerTextColor
     )
+
+    // Use the provided kalendarHeaderTextKonfig or the default header color.
     val newHeaderTextKonfig = kalendarHeaderTextKonfig ?: defaultHeaderColor
 
+    // Calculate the number of days in the current month.
     val daysInMonth = currentMonth.length(currentYear.isLeapYear())
+
+    // Pad the month value to ensure it has at least two digits.
     val monthValue = currentMonth.value.toString().padStart(2, '0')
+
+    // Calculate the start day of the month in LocalDate format.
     val startDayOfMonth = "$currentYear-$monthValue-01".toLocalDate()
+
+    // Calculate the day of the week for the start day of the month.
     val firstDayOfMonth = startDayOfMonth.dayOfWeek
+
+    // Retrieve the current context using LocalContext.
     val context = LocalContext.current
 
+    // Create a Column composable that represents the main UI structure.
     Column(
         modifier = modifier
             .background(
@@ -116,6 +140,7 @@ private val WeekDays = listOf("M", "T", "W", "T", "F", "S", "S")
             .fillMaxWidth()
             .padding(all = 8.dp)
     ) {
+        // Render header content or the KalendarHeader composable.
         if (headerContent != null) {
             headerContent(currentMonth, currentYear)
         } else {
@@ -133,11 +158,16 @@ private val WeekDays = listOf("M", "T", "W", "T", "F", "S", "S")
                 },
             )
         }
+
+        // Add a spacer with vertical padding.
         Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+        // Render a LazyVerticalGrid with day labels and calendar days.
         LazyVerticalGrid(
             modifier = Modifier.fillMaxWidth(),
             columns = GridCells.Fixed(7),
             content = {
+                // Render week day labels if showLabel is true.
                 if (showLabel) {
                     items(WeekDays) { item ->
                         Text(
@@ -151,9 +181,12 @@ private val WeekDays = listOf("M", "T", "W", "T", "F", "S", "S")
                     }
                 }
 
+                // Render calendar days for the current month.
                 items((getFirstDayOfMonth(firstDayOfMonth)..daysInMonth).toList()) {
                     if (it > 0) {
                         val day = calculateDay(it, currentMonth, currentYear)
+
+                        // Render day content or the KalendarDay composable.
                         if (dayContent != null) {
                             dayContent(day)
                         } else {
@@ -182,8 +215,7 @@ private val WeekDays = listOf("M", "T", "W", "T", "F", "S", "S")
                                             onDayClick(newDate, clickedDateEvent)
                                         }
                                     )
-                                   onEvent(AppointmentEvent.ShowDialog)
-
+                                    onEvent(AppointmentEvent.ShowDialog)
                                 }
                             )
                         }

@@ -55,8 +55,7 @@ fun EditNote(
         mutableStateOf(false)
     }
 
-
-
+    // Fetch the note details when the composable is first launched
     LaunchedEffect(key1 = true) {
         scope.launch(Dispatchers.IO) {
             note.value = viewModel.getNote(noteId) ?: Constants.noteDetailPlaceHolder
@@ -72,6 +71,7 @@ fun EditNote(
                     AppBar(
                         title = "Edit Note",
                         onIconClick = {
+                            // Update the note when the save icon is clicked
                             viewModel.updateNote(
                                 Note(
                                     userId = note.value.userId,
@@ -81,7 +81,7 @@ fun EditNote(
                                 )
                             )
                             navController.popBackStack()
-                            selectedOption  = -1
+                            selectedOption = -1
                         },
                         icon = {
                             Icon(
@@ -99,7 +99,7 @@ fun EditNote(
                         .padding(12.dp)
                         .fillMaxSize()
                 ) {
-
+                    // Input field for the note title
                     TextField(
                         value = currentTitle.value,
                         colors = TextFieldDefaults.textFieldColors(
@@ -121,12 +121,13 @@ fun EditNote(
 
                     Spacer(modifier = Modifier.padding(12.dp))
 
+                    // Input field for the note content
                     TextField(
                         value = currentNote.value,
                         colors = TextFieldDefaults.textFieldColors(
                             cursorColor = Color.Black,
                             focusedLabelColor = Color.Black,
-                        ),modifier = Modifier.fillMaxWidth(),
+                        ), modifier = Modifier.fillMaxWidth(),
                         onValueChange = { value ->
                             currentNote.value = value
                             if (currentNote.value != note.value.description) {
@@ -140,7 +141,6 @@ fun EditNote(
                         label = { Text(text = "Note", fontWeight = FontWeight.SemiBold) }
                     )
                 }
-
             }
         }
     }

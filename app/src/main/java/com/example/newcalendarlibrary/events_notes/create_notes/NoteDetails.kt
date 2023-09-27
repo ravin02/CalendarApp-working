@@ -41,6 +41,7 @@ fun NoteDetails(
         mutableStateOf(noteDetailPlaceHolder)
     }
 
+    // Fetch the note details when the composable is first launched
     LaunchedEffect(true) {
         scope.launch(Dispatchers.IO) {
             note.value = viewModel.getNote(noteId) ?: noteDetailPlaceHolder
@@ -66,23 +67,25 @@ fun NoteDetails(
                         iconState = remember { mutableStateOf(true) }
                     )
                 },
-
-                ) {
+            ) {
                 Column(
                     Modifier
                         .fillMaxSize()
                 ) {
-
+                    // Display the note title
                     Text(
                         text = note.value.title,
                         modifier = Modifier.padding(top = 24.dp, start = 12.dp, end = 24.dp),
                         fontSize = 36.sp,
                         fontWeight = FontWeight.Bold
                     )
+
+                    // Display the date updated
                     Text(text = note.value.dateUpdated, Modifier.padding(12.dp), color = Color.Gray)
+
+                    // Display the note description
                     Text(text = note.value.description, Modifier.padding(12.dp), fontSize = 20.sp)
                 }
-
             }
         }
     }
