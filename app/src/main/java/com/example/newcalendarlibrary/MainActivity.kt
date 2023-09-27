@@ -18,16 +18,21 @@ import com.example.newcalendarlibrary.room.AppDatabase
 import com.example.newcalendarlibrary.room.events.EventDatabase
 import com.example.newcalendarlibrary.room.notes.NotesRepository
 import com.example.newcalendarlibrary.room.user.UserRepository
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    // Late-initialized variable for the ViewModel
     private lateinit var notesViewModel: NotesViewModel
 
-
+    // Lazy initialization of the Room database instance
     private val db by lazy {
         Room.databaseBuilder(applicationContext, EventDatabase::class.java, "appointment.db")
             .build()
     }
+
+    // ViewModel initialization using the viewModels extension function
     private val viewModel by viewModels<EventViewModel>(
         factoryProducer = {
             object : ViewModelProvider.Factory {
@@ -41,18 +46,26 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Creating instances of repositories
         val notesRepository = NotesRepository(context = applicationContext)
         val userRepository = UserRepository(context = applicationContext)
 
+        // Initialize a noteDao from the AppDatabase
         AppDatabase.AppDb.getInstance(this).noteDao()
+
+        // Create a ViewModelFactory for the NotesViewModel
         val notesViewModelFactory = NotesViewModelFactory(notesRepository, userRepository)
 
+        // Initialize the NotesViewModel using the ViewModelProvider
         notesViewModel = ViewModelProvider(this, notesViewModelFactory)[NotesViewModel::class.java]
 
-
+        // Set the content of the activity using Jetpack Compose
         setContent {
 
+            // Collect the state from the viewModel
             val state by viewModel.state.collectAsState()
+
+            // Display the BottomNav composable with necessary parameters
             BottomNav(
                 onEvent = viewModel::onEvent,
                 eventDao = db.eventDao,
@@ -60,11 +73,8 @@ class MainActivity : ComponentActivity() {
                 notesViewModel = notesViewModel,
                 navController =  rememberNavController()
             )
-            //LoginScreen(notesViewModel = notesViewModel)
-
+            // Uncomment to display LoginScreen with the notesViewModel
+            // LoginScreen(notesViewModel = notesViewModel)
         }
     }
-
 }
-
-

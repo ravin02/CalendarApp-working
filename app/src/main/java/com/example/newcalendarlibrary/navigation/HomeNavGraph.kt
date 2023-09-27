@@ -1,56 +1,35 @@
 package com.example.newcalendarlibrary.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.navigation.navigation
-import com.example.newcalendarlibrary.AddEventScreen
 import com.example.newcalendarlibrary.AppointmentEvent
-import com.example.newcalendarlibrary.NoteEvent
-import com.example.newcalendarlibrary.calendar.CalendarScreen
-import com.example.newcalendarlibrary.color_picker.colors
 import com.example.newcalendarlibrary.create_notes.AppointmentState
-import com.example.newcalendarlibrary.create_notes.NoteState
 import com.example.newcalendarlibrary.event_update.EventUpdateScreen
 import com.example.newcalendarlibrary.events_notes.NotesViewModel
 import com.example.newcalendarlibrary.events_notes.create_notes.CreateNote
 import com.example.newcalendarlibrary.events_notes.create_notes.EditNote
 import com.example.newcalendarlibrary.events_notes.create_notes.NoteDetails
 import com.example.newcalendarlibrary.events_notes.create_notes.NoteList
-import com.example.newcalendarlibrary.home.HomeScreen
 import com.example.newcalendarlibrary.navigation.components.BottomBarScreen
-import com.example.newcalendarlibrary.navigation.graphs.authNavGraph
 import com.example.newcalendarlibrary.register.LoginPage
 import com.example.newcalendarlibrary.register.RegisterPage
-import com.example.newcalendarlibrary.room.events.EventDao
-import com.example.newcalendarlibrary.settings.SettingsScreen
-import com.example.newcalendarlibrary.utils.RadioButtonsNavigation
 
-/**
- * This NavGraph is the real deal "🤯"
- * */
+
 @Composable
 fun HomeNavGraph(
     state: AppointmentState,
     onEvent: (AppointmentEvent) -> Unit,
-    eventDao: EventDao,
     notesViewModel: NotesViewModel,
     navController: NavHostController,
-    navigateToItemUpdate: (Int) -> Unit
+    navigateToItemUpdate: (Int) -> Unit,
 ) {
 
-    var selectedColor by remember { mutableStateOf(colors[0]) }
-
+    // Define the navigation graph using NavHost
     NavHost(
         navController = navController,
         startDestination = Screens.LoginScreen.route
@@ -58,11 +37,13 @@ fun HomeNavGraph(
         composable(
             route = Screens.LoginScreen.route
         ) {
+            // Show the login page
             LoginPage(navController = navController, notesViewModel = notesViewModel)
         }
         composable(
             route = Screens.SignUpScreen.route
         ) {
+            // Show the registration page
             RegisterPage(navController = navController)
         }
 
@@ -72,10 +53,12 @@ fun HomeNavGraph(
                 type = NavType.IntType
             })
         ) {
+            // Extract the userId parameter from the route
             val userId = remember {
                 it.arguments?.getInt("userId")
             }
             if (userId != null) {
+                // Show the note list page with the extracted userId
                 NoteList(
                     navController,
                     notesViewModel,
@@ -86,7 +69,7 @@ fun HomeNavGraph(
                 )
             }
         }
-        
+
         composable(
             route = "${Screens.EventUpdateScreen.route}/{id}",
             arguments = listOf(
@@ -95,17 +78,19 @@ fun HomeNavGraph(
                 }
             )
         ) { navBackStackEntry ->
+            // Extract the itemId parameter from the route
             val itemId = navBackStackEntry.arguments!!.getInt("id")
+            // Show the event update screen with the extracted itemId
             EventUpdateScreen(
                 itemId = itemId,
                 onEvent = onEvent,
                 state = state,
                 navController = navController,
-                eventDao = eventDao
             )
         }
 
         composable("createnote_page") {
+            // Show the create note page
             CreateNote(navController = navController, notesViewModel)
         }
 
@@ -130,5 +115,3 @@ fun HomeNavGraph(
         }
     }
 }
-
-

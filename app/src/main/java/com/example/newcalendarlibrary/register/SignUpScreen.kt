@@ -48,6 +48,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -59,11 +60,14 @@ import com.example.newcalendarlibrary.ui.theme.textWhiteColor
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
+// Define a Composable function for the registration page
+
 @Composable
 fun RegisterPage(
     navController: NavController,
     userViewModel: UserViewModel = viewModel()
 ) {
+    // Define mutable state variables for various form fields and their error states
 
     val nameValue = remember { mutableStateOf("") }
     val loginValue = remember { mutableStateOf("") }
@@ -77,11 +81,16 @@ fun RegisterPage(
     val passwordErrorState = remember { mutableStateOf(false) }
     val confirmPasswordErrorState = remember { mutableStateOf(false) }
 
+    // Get the current context
     val context = LocalContext.current
 
+    // Initialize a variable to check if a user with the same login already exists
     var userExist: Boolean
+
+    // Initialize a variable to track if all form fields are filled
     var allFields = true
 
+    // Create the UI layout for the registration page using Compose
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -96,12 +105,14 @@ fun RegisterPage(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // Create a LazyColumn to hold the UI elements vertically centered
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
+                    // Title text for the registration page
                     Text(
                         text = "Welcome!",
                         fontSize = 30.sp,
@@ -112,6 +123,7 @@ fun RegisterPage(
 
                     )
                     Spacer(modifier = Modifier.padding(5.dp))
+                    // Text field for username login
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         OutlinedTextField(
                             value = loginValue.value,
@@ -133,15 +145,20 @@ fun RegisterPage(
                                 if (loginErrorState.value) {
                                     Text(text = "Required", color = Color.Red)
                                 } else {
-                                    Text(text = "Login")
+                                    Text(text = "Username")
                                 }
                             },
-                            placeholder = { Text(text = "Login") },
+                            placeholder = { Text(text = "Username") },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(0.8f),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black, focusedBorderColor = Color.Black, focusedLabelColor = Color.Black)
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                textColor = Color.Black,
+                                focusedBorderColor = Color.Black,
+                                focusedLabelColor = Color.Black
+                            )
                         )
 
+                        // Text field for name of user
                         OutlinedTextField(
                             value = nameValue.value,
                             onValueChange = {
@@ -163,8 +180,13 @@ fun RegisterPage(
                             placeholder = { Text(text = "Name") },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(0.8f),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black, focusedBorderColor = Color.Black, focusedLabelColor = Color.Black)
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                textColor = Color.Black,
+                                focusedBorderColor = Color.Black,
+                                focusedLabelColor = Color.Black
+                            )
                         )
+                        // Text field for password
 
                         OutlinedTextField(
                             value = passwordValue.value,
@@ -198,9 +220,13 @@ fun RegisterPage(
                             },
                             visualTransformation = if (passwordVisibility.value) VisualTransformation.None
                             else PasswordVisualTransformation(),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black, focusedBorderColor = Color.Black, focusedLabelColor = Color.Black)
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                textColor = Color.Black,
+                                focusedBorderColor = Color.Black,
+                                focusedLabelColor = Color.Black
+                            )
                         )
-
+                        // Text field for confirming password
                         OutlinedTextField(
                             value = confirmPasswordValue.value,
                             onValueChange = {
@@ -214,10 +240,10 @@ fun RegisterPage(
                                 if (confirmPasswordErrorState.value) {
                                     Text(text = "Required", color = Color.Red)
                                 } else {
-                                    Text(text = "Password")
+                                    Text(text = "Re-enter password")
                                 }
                             },
-                            placeholder = { Text(text = "Password") },
+                            placeholder = { Text(text = "Re-enter password") },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(0.8f),
                             trailingIcon = {
@@ -234,41 +260,53 @@ fun RegisterPage(
                             },
                             visualTransformation = if (confirmPasswordVisibility.value) VisualTransformation.None
                             else PasswordVisualTransformation(),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(textColor = Color.Black, focusedBorderColor = Color.Black, focusedLabelColor = Color.Black)
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                textColor = Color.Black,
+                                focusedBorderColor = Color.Black,
+                                focusedLabelColor = Color.Black
+                            )
                         )
                         Spacer(modifier = Modifier.padding(10.dp))
+                        // Sign-up button
                         Button(
+                            // This is a button that performs an action when clicked.
                             onClick = {
                                 runBlocking {
+                                    // This block runs a coroutine to perform the following operation.
                                     userExist =
                                         userViewModel.checkIfUserExists(loginValue.value)
                                 }
 
+                                // Check if there are no errors in input fields and set 'allFields' to true if all conditions are met.
                                 if (!loginErrorState.value && !nameErrorState.value && !passwordErrorState.value && !confirmPasswordErrorState.value) {
                                     allFields = true
                                 }
 
-
+                                // Check if the login input field is empty and set 'loginErrorState' to true and 'allFields' to false if empty.
                                 if (loginValue.value.isEmpty()) {
                                     loginErrorState.value = true
                                     allFields = false
                                 }
 
+                                // Check if the password input field is empty and set 'passwordErrorState' to true and 'allFields' to false if empty.
                                 if (passwordValue.value.isEmpty()) {
                                     passwordErrorState.value = true
                                     allFields = false
                                 }
 
+                                // Check if the name input field is empty and set 'nameErrorState' to true and 'allFields' to false if empty.
                                 if (nameValue.value.isEmpty()) {
                                     nameErrorState.value = true
                                     allFields = false
                                 }
 
+                                // Check if the confirmPassword input field is empty and set 'confirmPasswordErrorState' to true and 'allFields' to false if empty.
                                 if (confirmPasswordValue.value.isEmpty()) {
                                     confirmPasswordErrorState.value = true
                                     allFields = false
                                 }
 
+                                // Display a toast message if not all fields are filled.
                                 if (!allFields) {
                                     Toast.makeText(
                                         context,
@@ -277,19 +315,31 @@ fun RegisterPage(
                                     ).show()
                                 }
 
+                                // Check if the password and confirmPassword do not match and display a toast message if they don't match.
                                 if (passwordValue.value != confirmPasswordValue.value) {
                                     Toast.makeText(
                                         context,
                                         "Passwords aren't matching, please try to type them again",
                                         Toast.LENGTH_LONG
                                     ).show()
-                                } else if (userExist) {
+                                }
+                                // Check if the password doesn't meet length and capitalization requirements and display a toast message if not met.
+                                else if (passwordValue.value.length < 8 || passwordValue.value == passwordValue.value.lowercase()) {
+                                    Toast.makeText(
+                                        context,
+                                        "Passwords length must be more than 8 characters and with at least one capital letter",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                                // Check if the user with the given login already exists and display a toast message if they do.
+                                else if (userExist) {
                                     Toast.makeText(
                                         context,
                                         "User with login '${loginValue.value}' already exists! Please choose a different login.",
                                         Toast.LENGTH_LONG
                                     ).show()
                                 } else {
+                                    // If all conditions are met and 'allFields' is true, register the user and display a success message.
                                     if (allFields) {
                                         userViewModel.registerUser(
                                             nameValue.value,
@@ -302,6 +352,7 @@ fun RegisterPage(
                                             "User '${nameValue.value}' registered successfully!",
                                             Toast.LENGTH_LONG
                                         ).show()
+                                        // Navigate to the login screen.
                                         navController.navigate(Screens.LoginScreen.route)
                                     }
                                 }
@@ -314,18 +365,23 @@ fun RegisterPage(
                         ) {
                             Text(text = "Sign Up", fontSize = 20.sp, color = textWhiteColor)
                         }
-                    }
-                    Spacer(modifier = Modifier.padding(20.dp))
-                    Text(
-                        text = "Login Instead",
-                        modifier = Modifier.clickable(onClick = {
-                            navController.navigate("login_page") {
-                                launchSingleTop = true
-                            }
-                        })
-                    )
-                    Spacer(modifier = Modifier.padding(20.dp))
 
+                        Spacer(modifier = Modifier.padding(20.dp))
+
+                        // Text that allows navigation to the login screen when clicked.
+                        Text(
+                            text = "Login Instead",
+                            modifier = Modifier.clickable(onClick = {
+                                navController.navigate(Screens.LoginScreen.route) {
+                                    launchSingleTop = true
+                                }
+                            })
+                        )
+
+                        Spacer(modifier = Modifier.padding(20.dp))
+
+
+                    }
                 }
             }
         }
