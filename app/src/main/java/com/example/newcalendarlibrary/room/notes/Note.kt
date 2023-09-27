@@ -7,16 +7,26 @@ import androidx.room.PrimaryKey
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+// Define an Entity class for representing a Note in the database
 @Entity(tableName = "notes", indices = [Index(value = ["id"], unique = true)])
 data class Note(
+    // Primary key with auto-generation
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "userId") val userId: Int = 0,
-    @ColumnInfo(name = "title") val title: String,
-    @ColumnInfo(name = "note") val description: String,
-    @ColumnInfo(name = "dateUpdated") val dateUpdated: String = getDateCreated()
 
+    // User ID associated with the note
+    @ColumnInfo(name = "userId") val userId: Int = 0,
+
+    // Title of the note
+    @ColumnInfo(name = "title") val title: String,
+
+    // Description or content of the note
+    @ColumnInfo(name = "note") val description: String,
+
+    // Date when the note was last updated, with a default value
+    @ColumnInfo(name = "dateUpdated") val dateUpdated: String = getDateCreated()
 )
 
+// Function to get the current date and time formatted as a string
 fun getDateCreated(): String {
     return LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH-mm"))
 }

@@ -64,6 +64,7 @@ fun BottomNav(
         HomeNavGraph(
             state = state,
             onEvent = onEvent,
+            eventDao = eventDao,
             notesViewModel = notesViewModel,
             navController = navController,
             navigateToItemUpdate = { navController.navigate("${Screens.EventUpdateScreen.route}/${it}") }

@@ -123,7 +123,7 @@ fun RegisterPage(
 
                     )
                     Spacer(modifier = Modifier.padding(5.dp))
-                    // Text field for username login
+                    // Text field for user login
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         OutlinedTextField(
                             value = loginValue.value,

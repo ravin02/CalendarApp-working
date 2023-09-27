@@ -31,7 +31,10 @@ import com.example.newcalendarlibrary.create_notes.AppointmentState
 import com.example.newcalendarlibrary.events_notes.NotesViewModel
 import com.example.newcalendarlibrary.events_notes.create_notes.NoteList
 import com.example.newcalendarlibrary.settings.SettingsScreen
-var selectedOption by  mutableIntStateOf(1)
+// Define a mutable state variable 'selectedOption' initialized to 1
+var selectedOption by mutableIntStateOf(1)
+
+// Composable function for a radio button-based navigation component
 @Composable
 fun RadioButtonsNavigation(
     navController: NavHostController,
@@ -40,12 +43,13 @@ fun RadioButtonsNavigation(
     state: AppointmentState,
     onEvent: (AppointmentEvent) -> Unit,
     navigateToItemUpdate: (Int) -> Unit
-
 ) {
-
+    // Define a mutable state variable 'selectedColor' and initialize it with the first color in 'colors'
     var selectedColor by remember { mutableStateOf(colors[0]) }
 
+    // Define the UI layout using a Column layout
     Column {
+        // Create a row to hold radio buttons and corresponding text
         Row(
             Modifier
                 .wrapContentSize()
@@ -53,13 +57,15 @@ fun RadioButtonsNavigation(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Radio button and text for "Home"
             RadioButton(
                 selected = selectedOption == -1,
                 onClick = { selectedOption = -1 },
                 modifier = Modifier.weight(1f)
             )
-            Text(text = "Notes")
+            Text(text = "Home")
 
+            // Radio button and text for "Calendar"
             RadioButton(
                 selected = selectedOption == 1,
                 onClick = { selectedOption = 1 },
@@ -67,22 +73,19 @@ fun RadioButtonsNavigation(
             )
             Text(text = "Calendar")
 
-
-
-
+            // Radio button and text for "Settings"
             RadioButton(
                 selected = selectedOption == 2,
                 onClick = { selectedOption = 2 },
                 modifier = Modifier.weight(1f)
             )
             Text(text = "Settings")
-
-
         }
 
+        // Display different content based on the selected radio button
         when (selectedOption) {
-
             0 -> {
+                // Display the NoteList component
                 NoteList(
                     navController = navController,
                     notesViewModel = notesViewModel,
@@ -92,16 +95,16 @@ fun RadioButtonsNavigation(
                     navigateToItemUpdate = navigateToItemUpdate
                 )
             }
-
             1 -> {
+                // Display the CalendarScreen component
                 CalendarScreen(
                     state = state,
                     onEvent = onEvent,
                     navigateToItemUpdate = navigateToItemUpdate
                 )
             }
-
             2 -> {
+                // Display the SettingsScreen component
                 SettingsScreen(
                     navController = navController,
                     modifier = Modifier,
@@ -109,7 +112,6 @@ fun RadioButtonsNavigation(
                     onColorSelected = { selectedColor = it }
                 )
             }
-
         }
     }
 }
